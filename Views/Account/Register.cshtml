@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Register";
+    var areas = ViewBag.Areas as List<AreaMaster> ?? new();
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <section class="surface-card p-4 p-lg-5">
+            <h1 class="section-title mb-2">Customer Registration</h1>
+            <p class="section-copy mb-4">This matches the plan step where the user registration form is filled before login and booking.</p>
+
+            <form method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <input name="firstName" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <input name="lastName" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input name="email" type="email" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Contact No</label>
+                    <input name="contactNo" class="form-control" maxlength="10" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Area</label>
+                    <select name="areaId" class="form-select" required>
+                        @foreach (var area in areas)
+                        {
+                            <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Password</label>
+                    <input name="password" type="password" class="form-control" required />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-brand">Register</button>
+                    <a asp-action="Login" class="btn btn-outline-dark ms-2">Login</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

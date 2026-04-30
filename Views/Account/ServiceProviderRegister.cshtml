@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Service Provider Register";
+    var areas = ViewBag.Areas as List<AreaMaster> ?? new();
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <section class="surface-card p-4 p-lg-5">
+            <h1 class="section-title mb-2">Service Person Registration</h1>
+            <p class="section-copy mb-4">This registration goes into admin approval. Once approved, the generated password is sent through a mail simulation stored in the system.</p>
+
+            <form method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <div class="col-md-6">
+                    <label class="form-label">Service Provider Name</label>
+                    <input name="providerName" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input name="email" type="email" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Service Type</label>
+                    <select name="serviceType" class="form-select" required>
+                        <option>Party Plot</option>
+                        <option>Caterer</option>
+                        <option>Decoration</option>
+                        <option>Music</option>
+                        <option>Transporter</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Area</label>
+                    <select name="areaId" class="form-select" required>
+                        @foreach (var area in areas)
+                        {
+                            <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Profile Image Url</label>
+                    <input name="profileImageUrl" class="form-control" placeholder="https://..." required />
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-brand">Submit For Approval</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

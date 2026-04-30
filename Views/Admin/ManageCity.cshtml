@@ -1,0 +1,48 @@
+@model List<CityMaster>
+@{
+    ViewData["Title"] = "Manage Cities";
+    var states = ViewBag.States as List<StateMaster> ?? new();
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin Locality Page Manage City</h1>
+            <p class="section-copy">Cities are attached to states and then used by areas and user registration.</p>
+        </div>
+    </div>
+
+    <form asp-action="AddCity" method="post" class="row g-3 mb-4">
+        @Html.AntiForgeryToken()
+        <div class="col-md-4">
+            <select name="stateId" class="form-select" required>
+                @foreach (var state in states)
+                {
+                    <option value="@state.State_Id">@state.State_Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-5">
+            <input type="text" name="cityName" class="form-control" placeholder="New city name" required />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-brand w-100">Add City</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern">
+            <thead><tr><th>State</th><th>City</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var city in Model)
+            {
+                <tr>
+                    <td>@city.State?.State_Name</td>
+                    <td>@city.City_Name</td>
+                    <td><span class="status-pill @(city.City_Status ? "success" : "danger")">@(city.City_Status ? "Active" : "Inactive")</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

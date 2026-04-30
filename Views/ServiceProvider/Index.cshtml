@@ -1,0 +1,92 @@
+@model ServiceProviderDashboardViewModel
+@{
+    ViewData["Title"] = "Service Provider Dashboard";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Service Person Dashboard</h1>
+            <p class="section-copy">View booking on base services, confirm orders, and update working condition statuses such as collect material, reached all members, and ready party plot photos.</p>
+        </div>
+        <a asp-action="ManageServices" class="btn btn-outline-dark">Manage Services</a>
+    </div>
+
+    <h4 class="mb-3">My Services</h4>
+    <div class="row g-3 mb-5">
+        @foreach (var service in Model.Services)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-semibold">@service.Service_Name</span>
+                        <span class="price-pill">@service.Price.ToString("C0")</span>
+                    </div>
+                    <div class="small text-secondary">@service.Service_Category</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h4 class="mb-3">Service Orders</h4>
+    @if (!Model.Orders.Any())
+    {
+        <div class="empty-state">No any order booking.</div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var order in Model.Orders)
+            {
+                <div class="col-12">
+                    <div class="timeline-card p-4">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">@order.ServiceCatalogItem?.Service_Name</h5>
+                                <div class="small text-secondary">@order.Booking?.Customer?.First_Name @order.Booking?.Customer?.Last_Name • @order.Booking?.Date.ToString("dd MMM yyyy")</div>
+                            </div>
+                            <span class="status-pill @(order.Confirmation_Status == "Confirmed" ? "success" : "warning")">@order.Confirmation_Status</span>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <form asp-action="ConfirmOrder" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@order.Booking_Service_Detail_Id" />
+                                <input type="hidden" name="providerComment" value="Order confirmed by service person." />
+                                <button class="btn btn-dark btn-sm">Confirm Order</button>
+                            </form>
+                        </div>
+
+                        <form asp-action="UpdateStatus" method="post" enctype="multipart/form-data" class="row g-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookingServiceId" value="@order.Booking_Service_Detail_Id" />
+                            <div class="col-md-4">
+                                <select name="stage" class="form-select">
+                                    <option>Collect Material</option>
+                                    <option>Reached all Members</option>
+                                    <option>Manage Party Plot</option>
+                                    <option>Completion of work</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="status" class="form-select">
+                                    <option value="true">Completed</option>
+                                    <option value="false">Pending</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="file" name="photo" class="form-control" accept="image/*" />
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="description" class="form-control" placeholder="Description" />
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-brand btn-sm">Update Status</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>

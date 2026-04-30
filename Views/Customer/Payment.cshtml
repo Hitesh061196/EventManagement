@@ -1,0 +1,39 @@
+@model BookingCartDetail
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Payment Page</h1>
+            <p class="section-copy">All statuses and all event runs lead here once the event manager approves the order.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="metric-card p-4 h-100">
+                <div class="small text-secondary">Booking Reference</div>
+                <h4 class="fw-bold">@Model.Booking_Reference</h4>
+                <div class="small text-secondary mb-2">@Model.EventType?.Event_Type</div>
+                <div class="price-pill">@Model.Ammount.ToString("C0")</div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <form method="post" asp-action="Payment" class="surface-card p-4 h-100">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Booking_Id" />
+                <div class="mb-3">
+                    <label class="form-label">Payment Method</label>
+                    <select name="paymentMethod" class="form-select">
+                        <option>UPI</option>
+                        <option>Credit Card</option>
+                        <option>Net Banking</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-brand w-100">Pay Now</button>
+            </form>
+        </div>
+    </div>
+</section>

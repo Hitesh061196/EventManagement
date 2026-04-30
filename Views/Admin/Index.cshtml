@@ -1,0 +1,33 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin Home Page</h1>
+            <p class="section-copy">The admin module from the plan includes locality management, event type setup, service person approval, event manager creation, feedback, and inquiry response.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Pending Providers</div><div class="fs-2 fw-bold">@Model.PendingProviders</div></div></div>
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Approved Providers</div><div class="fs-2 fw-bold">@Model.ActiveProviders</div></div></div>
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Pending Bookings</div><div class="fs-2 fw-bold">@Model.PendingBookings</div></div></div>
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Feedback</div><div class="fs-2 fw-bold">@Model.FeedbackCount</div></div></div>
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Inquiry</div><div class="fs-2 fw-bold">@Model.InquiryCount</div></div></div>
+        <div class="col-md-6 col-xl-2"><div class="metric-card p-4 h-100"><div class="small text-secondary">Manager / Planner</div><div class="fs-2 fw-bold">@Model.EventManagerCount</div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageState"><h5 class="fw-bold">Manage State</h5><p class="text-secondary mb-0">Admin locality page manage state and view state.</p></a></div>
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageCity"><h5 class="fw-bold">Manage City</h5><p class="text-secondary mb-0">Admin locality page manage city and city listing.</p></a></div>
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageArea"><h5 class="fw-bold">Manage Area</h5><p class="text-secondary mb-0">Admin locality page manage area and area listing.</p></a></div>
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageEventType"><h5 class="fw-bold">Manage Event Type</h5><p class="text-secondary mb-0">Create active or inactive event types used throughout booking.</p></a></div>
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageServiceProviders"><h5 class="fw-bold">Manage Service Person</h5><p class="text-secondary mb-0">Approve, reject, block, and view mail simulation credentials.</p></a></div>
+        <div class="col-md-6 col-xl-4"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ManageEventManagers"><h5 class="fw-bold">Manage Event Manager / Planner</h5><p class="text-secondary mb-0">Create event managers and planners and send credentials through mail simulation.</p></a></div>
+        <div class="col-md-6 col-xl-6"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ViewFeedback"><h5 class="fw-bold">View Feedback</h5><p class="text-secondary mb-0">Read customer feedback submitted after booking and payment flows.</p></a></div>
+        <div class="col-md-6 col-xl-6"><a class="metric-card p-4 h-100 text-decoration-none d-block" asp-action="ViewInquiry"><h5 class="fw-bold">View Inquiry</h5><p class="text-secondary mb-0">Respond to visitor inquiries and track response dates.</p></a></div>
+    </div>
+</section>

@@ -1,0 +1,45 @@
+@model List<EventTypeMaster>
+@{
+    ViewData["Title"] = "Manage Event Types";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin Side Manage Event Type</h1>
+            <p class="section-copy">Create the event master list used by service items and customer booking.</p>
+        </div>
+    </div>
+
+    <form asp-action="AddEventType" method="post" class="row g-3 mb-4">
+        @Html.AntiForgeryToken()
+        <div class="col-md-9">
+            <input type="text" name="eventType" class="form-control" placeholder="New event type" required />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-brand w-100">Add Event Type</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern">
+            <thead><tr><th>Event Type</th><th>Status</th><th>Toggle</th></tr></thead>
+            <tbody>
+            @foreach (var evt in Model)
+            {
+                <tr>
+                    <td>@evt.Event_Type</td>
+                    <td><span class="status-pill @(evt.Event_Type_Status == "Active" ? "success" : "danger")">@evt.Event_Type_Status</span></td>
+                    <td>
+                        <form asp-action="ToggleEventType" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@evt.Event_Id" />
+                            <button class="btn btn-outline-dark btn-sm">Toggle</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

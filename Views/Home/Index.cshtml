@@ -1,8 +1,80 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Event Management";
+    var eventTypes = ViewBag.EventTypes as List<EventTypeMaster> ?? new();
+    var featuredServices = ViewBag.FeaturedServices as List<ServiceCatalogItem> ?? new();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero-card p-4 p-lg-5 mb-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge rounded-pill text-bg-light mb-3">Visitor Home Page</span>
+            <h1 class="display-5 fw-bold mb-3">Plan-driven event booking from inquiry to payment and live status tracking.</h1>
+            <p class="lead text-white-50 mb-4">The application follows the provided project flow: visitor inquiry, customer registration, multi-service event booking, service-person order handling, event-manager approval, feedback, and admin monitoring.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-brand btn-lg" asp-controller="Account" asp-action="Register">Customer Registration</a>
+                <a class="btn btn-outline-light btn-lg" asp-controller="Home" asp-action="Contact">Visitor Inquiry</a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="row g-3">
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Modules</div><div class="fs-3 fw-bold">5 Roles</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Flow</div><div class="fs-3 fw-bold">End to End</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Booking</div><div class="fs-3 fw-bold">Multi Service</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Demo Data</div><div class="fs-3 fw-bold">Ready</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="page-title-row">
+        <div>
+            <h2 class="section-title">Event Types</h2>
+            <p class="section-copy">The plan starts with registration, login, and book event. These active event types are ready for booking.</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        @foreach (var eventType in eventTypes)
+        {
+            <div class="col-md-6 col-xl-3">
+                <div class="service-card p-3 h-100">
+                    <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900" alt="@eventType.Event_Type" />
+                    <div class="pt-3">
+                        <div class="status-pill warning mb-2">@eventType.Event_Type_Status</div>
+                        <h5 class="fw-bold">@eventType.Event_Type</h5>
+                        <p class="text-secondary small">Book this event type and then choose party plot, caterer, optional decoration/music, and transporter.</p>
+                        <a class="btn btn-dark w-100" asp-controller="Customer" asp-action="BookEvent">Book @eventType.Event_Type</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section>
+    <div class="page-title-row">
+        <div>
+            <h2 class="section-title">Featured Service Screens</h2>
+            <p class="section-copy">The plan walks through party plot, caterer, decoration, music, and transporter selection. These seeded services support that exact flow.</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        @foreach (var service in featuredServices)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="service-card p-3 h-100">
+                    <img src="@service.Photo_Url" alt="@service.Service_Name" />
+                    <div class="pt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="status-pill">@service.Service_Category</span>
+                            <span class="price-pill">@service.Price.ToString("C0")</span>
+                        </div>
+                        <h5 class="fw-bold">@service.Service_Name</h5>
+                        <p class="small text-secondary">@service.Description</p>
+                        <div class="small text-secondary">Provider: @(service.ServiceProvider?.Service_Provider_Name ?? "Internal Demo")</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,71 @@
+@model EventManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Event Manager Dashboard";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Login Event Manager and View Order</h1>
+            <p class="section-copy">The event manager can review service confirmations, event progress, and confirm the customer order.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var booking in Model.Bookings)
+        {
+            <div class="col-12">
+                <div class="timeline-card p-4">
+                    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+                        <div>
+                            <h4 class="fw-bold mb-1">@booking.Booking_Reference</h4>
+                            <div class="small text-secondary">@booking.Customer?.First_Name @booking.Customer?.Last_Name • @booking.EventType?.Event_Type • @booking.Date.ToString("dd MMM yyyy")</div>
+                        </div>
+                        <div class="text-lg-end">
+                            <div class="price-pill mb-2">@booking.Ammount.ToString("C0")</div>
+                            <div class="status-pill @(booking.Event_Manager_Approved ? "success" : "warning")">@booking.Booking_Status</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        @foreach (var service in booking.Services)
+                        {
+                            <div class="col-md-6 col-xl-4">
+                                <div class="metric-card p-3 h-100">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-semibold">@service.Service_Category</span>
+                                        <span class="status-pill @(service.Confirmation_Status == "Confirmed" ? "success" : "warning")">@service.Confirmation_Status</span>
+                                    </div>
+                                    <div class="small text-secondary">@(service.ServiceCatalogItem?.Service_Name ?? "Service")</div>
+                                    <div class="small text-secondary">@(service.ServiceCatalogItem?.ServiceProvider?.Service_Provider_Name ?? string.Empty)</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        @foreach (var status in booking.StatusUpdates.OrderByDescending(s => s.Date))
+                        {
+                            <div class="col-md-6">
+                                <div class="metric-card p-3 h-100">
+                                    <div class="status-pill success mb-2">@status.Event_Type</div>
+                                    <div class="fw-semibold">@status.Description</div>
+                                    <div class="small text-secondary">@status.Date.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!booking.Event_Manager_Approved)
+                    {
+                        <form asp-action="ConfirmOrder" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@booking.Booking_Id" />
+                            <button class="btn btn-brand">Event Manager Confirm Order</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

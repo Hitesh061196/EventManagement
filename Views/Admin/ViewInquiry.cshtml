@@ -1,0 +1,41 @@
+@model List<InquiryDetail>
+@{
+    ViewData["Title"] = "View Inquiries";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin View Inquiry Form</h1>
+            <p class="section-copy">Respond to customer or visitor questions and keep the response date updated.</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-modern align-middle">
+            <thead><tr><th>Name</th><th>Email</th><th>Question</th><th>Asked On</th><th>Response</th><th>Action</th></tr></thead>
+            <tbody>
+            @foreach (var inquiry in Model)
+            {
+                <tr>
+                    <td>@inquiry.Name</td>
+                    <td>@inquiry.Email</td>
+                    <td>@inquiry.Question</td>
+                    <td>@inquiry.Date.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <div>@inquiry.Response</div>
+                        <div class="small text-secondary">@(inquiry.Response_Date == default ? string.Empty : inquiry.Response_Date.ToString("dd MMM yyyy"))</div>
+                    </td>
+                    <td>
+                        <form asp-action="RespondInquiry" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@inquiry.Inquiry_Id" />
+                            <input type="text" name="response" class="form-control form-control-sm" placeholder="Response to customer" />
+                            <button type="submit" class="btn btn-brand btn-sm">Send</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

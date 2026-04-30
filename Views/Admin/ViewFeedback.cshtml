@@ -1,0 +1,30 @@
+@model List<FeedBackDetail>
+@{
+    ViewData["Title"] = "View Feedback";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin View Feedback</h1>
+            <p class="section-copy">Customers can submit feedback after tracking and payment. Admin can review it here.</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-modern">
+            <thead><tr><th>Name</th><th>Email</th><th>Feedback</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var fb in Model)
+            {
+                <tr>
+                    <td>@fb.Name</td>
+                    <td>@fb.Email</td>
+                    <td>@fb.FeedBack</td>
+                    <td>@fb.Created_On.ToLocalTime().ToString("dd MMM yyyy")</td>
+                    <td><span class="status-pill @(fb.FeedBack_Status ? "success" : "danger")">@(fb.FeedBack_Status ? "Active" : "Inactive")</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

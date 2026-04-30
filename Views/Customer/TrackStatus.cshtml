@@ -1,0 +1,86 @@
+@model List<BookingStatusViewModel>
+@{
+    ViewData["Title"] = "Track Status";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Track Event Status</h1>
+            <p class="section-copy">View order, tracking progress, ready party plot photos, and the payment link after event manager approval.</p>
+        </div>
+        <a asp-action="Feedback" class="btn btn-outline-dark">Send Feedback</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">No bookings found yet.</div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-12">
+                    <div class="timeline-card p-4">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+                            <div>
+                                <div class="small text-secondary">Booking Reference</div>
+                                <h4 class="fw-bold mb-1">@item.Booking.Booking_Reference</h4>
+                                <div class="small text-secondary">@item.Booking.EventType?.Event_Type on @item.Booking.Date.ToString("dd MMM yyyy") for @item.Booking.Guest_Count guests</div>
+                            </div>
+                            <div class="text-lg-end">
+                                <div class="price-pill mb-2">@item.Booking.Ammount.ToString("C0")</div>
+                                <div class="status-pill @(item.Booking.Event_Manager_Approved ? "success" : "warning")">@item.Booking.Booking_Status</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            @foreach (var service in item.Services)
+                            {
+                                <div class="col-md-6 col-xl-4">
+                                    <div class="metric-card p-3 h-100">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="fw-semibold">@service.Service_Category</span>
+                                            <span class="status-pill @(service.Confirmation_Status == "Confirmed" ? "success" : "warning")">@service.Confirmation_Status</span>
+                                        </div>
+                                        <div class="small text-secondary">@(service.ServiceCatalogItem?.Service_Name ?? "Service")</div>
+                                        <div class="small text-secondary">@service.Price.ToString("C0")</div>
+                                        <div class="small mt-2">@service.Provider_Comment</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            @foreach (var status in item.StatusUpdates)
+                            {
+                                <div class="col-md-6">
+                                    <div class="booking-service-card surface-card p-3 h-100">
+                                        <img src="@status.Photo" alt="@status.Event_Type" />
+                                        <div class="pt-3">
+                                            <div class="status-pill success mb-2">@status.Event_Type</div>
+                                            <h6 class="fw-bold">@status.Description</h6>
+                                            <div class="small text-secondary">@status.Date.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @if (item.Booking.Event_Manager_Approved)
+                            {
+                                <a asp-action="Payment" asp-route-id="@item.Booking.Booking_Id" class="btn btn-brand">Payment Page</a>
+                            }
+                            else
+                            {
+                                <span class="status-pill warning">Waiting for event manager confirmation before payment.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
