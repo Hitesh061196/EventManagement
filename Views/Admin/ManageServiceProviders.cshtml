@@ -1,0 +1,103 @@
+@model ManageServiceProvidersViewModel
+@{
+    ViewData["Title"] = "Manage Service Providers";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Manage Service Person Approve or Reject</h1>
+            <p class="section-copy">This page follows the service person onboarding flow in the plan: register, approve or reject, send password through mail simulation, then manage active providers.</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Pending Service Person</h4>
+    @if (!Model.PendingProviders.Any())
+    {
+        <div class="empty-state mb-4">No pending provider registrations.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-5">
+            <table class="table table-modern align-middle">
+                <thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Area</th><th>Actions</th></tr></thead>
+                <tbody>
+                @foreach (var provider in Model.PendingProviders)
+                {
+                    <tr>
+                        <td>@provider.Service_Provider_Name</td>
+                        <td>@provider.Service_Provider_Type</td>
+                        <td>@provider.Email_Id</td>
+                        <td>@provider.Area?.Area_Name, @provider.Area?.City?.City_Name</td>
+                        <td>
+                            <div class="d-flex flex-column gap-2">
+                                <form asp-action="ApproveProvider" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@provider.Service_Provider_Id" />
+                                    <button class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form asp-action="RejectProvider" method="post" class="d-flex gap-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@provider.Service_Provider_Id" />
+                                    <input type="text" name="reason" class="form-control form-control-sm" placeholder="Reason" />
+                                    <button class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h4 class="mb-3">Approved Service Person</h4>
+    <div class="table-responsive mb-5">
+        <table class="table table-modern align-middle">
+            <thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Status</th><th>Mail Simulation</th><th>Block</th></tr></thead>
+            <tbody>
+            @foreach (var provider in Model.ApprovedProviders)
+            {
+                <tr>
+                    <td>@provider.Service_Provider_Name</td>
+                    <td>@provider.Service_Provider_Type</td>
+                    <td>@provider.Email_Id</td>
+                    <td><span class="status-pill @(!provider.Is_Blocked ? "success" : "danger")">@(!provider.Is_Blocked ? "Active" : "Blocked")</span></td>
+                    <td class="small">@provider.Login?.Last_Notification</td>
+                    <td>
+                        <form asp-action="ToggleProviderBlock" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@provider.Service_Provider_Id" />
+                            <button class="btn btn-outline-dark btn-sm">@(provider.Is_Blocked ? "Unblock" : "Block")</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="mb-3">Rejected Service Person</h4>
+    @if (!Model.RejectedProviders.Any())
+    {
+        <div class="empty-state">No rejected providers.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-modern">
+                <thead><tr><th>Name</th><th>Email</th><th>Reason</th></tr></thead>
+                <tbody>
+                @foreach (var provider in Model.RejectedProviders)
+                {
+                    <tr>
+                        <td>@provider.Service_Provider_Name</td>
+                        <td>@provider.Email_Id</td>
+                        <td>@provider.Rejection_Reason</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

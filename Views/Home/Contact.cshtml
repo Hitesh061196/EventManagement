@@ -1,0 +1,32 @@
+@model InquiryDetail
+@{
+    ViewData["Title"] = "Inquiry";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Visitor Contact Us Page</h1>
+            <p class="section-copy">Submit your inquiry here. The admin can later view the form, respond, and track the response date from the admin module.</p>
+        </div>
+    </div>
+
+    <form asp-action="Contact" method="post" class="row g-3">
+        @Html.AntiForgeryToken()
+        <div class="col-md-6">
+            <label class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="col-12">
+            <label class="form-label">Question</label>
+            <textarea asp-for="Question" class="form-control" rows="4"></textarea>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-brand">Submit Inquiry</button>
+        </div>
+    </form>
+</section>

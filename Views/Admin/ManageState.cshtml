@@ -1,0 +1,53 @@
+@model List<StateMaster>
+@{
+    ViewData["Title"] = "Manage State";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin Locality Page Manage State</h1>
+            <p class="section-copy">Add, edit, and activate or deactivate states as described in the locality module.</p>
+        </div>
+    </div>
+
+    <form asp-action="AddState" method="post" class="row g-3 mb-4">
+        @Html.AntiForgeryToken()
+        <div class="col-md-8">
+            <input type="text" name="stateName" class="form-control" placeholder="New state name" required />
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-brand w-100">Add State</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern align-middle">
+            <thead><tr><th>State</th><th>Status</th><th>Edit</th><th>Toggle</th></tr></thead>
+            <tbody>
+            @foreach (var state in Model)
+            {
+                <tr>
+                    <td>@state.State_Name</td>
+                    <td><span class="status-pill @(state.State_Status ? "success" : "danger")">@(state.State_Status ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <form asp-action="EditState" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@state.State_Id" />
+                            <input type="text" name="stateName" value="@state.State_Name" class="form-control form-control-sm" />
+                            <button class="btn btn-dark btn-sm" type="submit">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="ToggleState" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@state.State_Id" />
+                            <button class="btn btn-outline-dark btn-sm" type="submit">Toggle</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

@@ -1,48 +1,101 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+@{
+    var role = Context.Session.GetString("Role");
+    var userName = Context.Session.GetString("UserName");
+}
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EventManagement</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - Event Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EventManagement.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EventManagement</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <div class="page-shell">
+        <header class="site-header sticky-top">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container">
+                    <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">
+                        <span class="brand-mark">EM</span>
+                        <span>Event Management</span>
+                    </a>
+                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="mainNav">
+                        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">About</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Inquiry</a></li>
+                            @if (string.IsNullOrEmpty(role))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Customer Register</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ServiceProviderRegister">Service Provider Register</a></li>
+                                <li class="nav-item"><a class="btn btn-brand ms-lg-2" asp-controller="Account" asp-action="Login">Login</a></li>
+                            }
+                            else
+                            {
+                                <li class="nav-item"><span class="nav-link text-brand-muted">Signed in as <strong>@userName</strong> (@role)</span></li>
+                                @if (role == "Admin")
+                                {
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+                                }
+                                else if (role == "Customer")
+                                {
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Customer" asp-action="BookEvent">Book Event</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-controller="Customer" asp-action="TrackStatus">Track Status</a></li>
+                                }
+                                else if (role == "Service Provider")
+                                {
+                                    <li class="nav-item"><a class="nav-link" asp-controller="ServiceProvider" asp-action="Index">Orders</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-controller="ServiceProvider" asp-action="ManageServices">Manage Services</a></li>
+                                }
+                                else if (role == "Event Manager" || role == "Event Planner")
+                                {
+                                    <li class="nav-item"><a class="nav-link" asp-controller="EventManager" asp-action="Index">View Orders</a></li>
+                                }
+                                <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ChangePassword">Change Password</a></li>
+                                <li class="nav-item"><a class="btn btn-outline-light ms-lg-2" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                            }
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            </nav>
+        </header>
+        <main class="container py-4">
             @RenderBody()
         </main>
+
+        <footer class="site-footer">
+            <div class="container d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+                <div>
+                    <div class="fw-semibold text-white">Plan-aligned Event Management Demo</div>
+                    <div class="small text-brand-muted">Visitor, admin, customer, service provider, and event manager flows in one application.</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-sm btn-outline-light" asp-controller="Seed" asp-action="Index">Re-seed Demo Data</a>
+                    <a class="btn btn-sm btn-outline-light" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - EventManagement - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    @if (TempData["Success"] != null)
+    {
+        <div id="swal-success" data-message="@TempData["Success"]"></div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div id="swal-error" data-message="@TempData["Error"]"></div>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

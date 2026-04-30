@@ -1,0 +1,56 @@
+@model List<AreaMaster>
+@{
+    ViewData["Title"] = "Manage Areas";
+    var cities = ViewBag.Cities as List<CityMaster> ?? new();
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Admin Locality Page Manage Area</h1>
+            <p class="section-copy">Areas are used in registration, staff assignment, and service provider placement.</p>
+        </div>
+    </div>
+
+    <form asp-action="AddArea" method="post" class="row g-3 mb-4">
+        @Html.AntiForgeryToken()
+        <div class="col-md-4">
+            <select name="cityId" class="form-select" required>
+                @foreach (var city in cities)
+                {
+                    <option value="@city.City_Id">@city.City_Name, @city.State?.State_Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-5">
+            <input type="text" name="areaName" class="form-control" placeholder="New area name" required />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-brand w-100">Add Area</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern">
+            <thead><tr><th>State</th><th>City</th><th>Area</th><th>Status</th><th>Toggle</th></tr></thead>
+            <tbody>
+            @foreach (var area in Model)
+            {
+                <tr>
+                    <td>@area.City?.State?.State_Name</td>
+                    <td>@area.City?.City_Name</td>
+                    <td>@area.Area_Name</td>
+                    <td><span class="status-pill @(area.Area_Status ? "success" : "danger")">@(area.Area_Status ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <form asp-action="ToggleArea" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@area.Area_Id" />
+                            <button class="btn btn-outline-dark btn-sm">Toggle</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

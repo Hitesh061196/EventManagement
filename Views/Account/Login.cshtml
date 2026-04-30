@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <section class="surface-card p-4 p-lg-5">
+            <h1 class="section-title mb-2">Login</h1>
+            <p class="section-copy mb-4">Use the seeded demo accounts or your registered credentials to enter the right flow.</p>
+
+            <form method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <div class="col-12">
+                    <label class="form-label">User Name / Email</label>
+                    <input type="text" name="userName" class="form-control" required />
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-brand w-100">Login</button>
+                </div>
+            </form>
+
+            <div class="mt-4 small text-secondary">
+                Demo admin: <strong>admin</strong> / <strong>admin123</strong><br />
+                Demo customer: <strong>customer@event.com</strong> / <strong>customer123</strong>
+            </div>
+
+            <hr class="my-4" />
+            <div class="d-flex flex-column gap-2">
+                <a asp-action="Register">Customer registration</a>
+                <a asp-action="ServiceProviderRegister">Service person registration</a>
+            </div>
+        </section>
+    </div>
+</div>

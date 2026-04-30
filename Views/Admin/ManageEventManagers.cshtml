@@ -1,0 +1,69 @@
+@model CreateEventManagerViewModel
+@{
+    ViewData["Title"] = "Manage Event Managers";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Event Manager Creation</h1>
+            <p class="section-copy">Create event manager or event planner accounts. The generated password is stored as a mail simulation notification on the login record.</p>
+        </div>
+    </div>
+
+    <form asp-action="CreateEventManager" method="post" class="row g-3 mb-5">
+        @Html.AntiForgeryToken()
+        <div class="col-md-4">
+            <label class="form-label">First Name</label>
+            <input asp-for="FirstName" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Last Name</label>
+            <input asp-for="LastName" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Role</label>
+            <select asp-for="RoleName" class="form-select">
+                <option>Event Manager</option>
+                <option>Event Planner</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Contact No</label>
+            <input asp-for="ContactNo" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Area</label>
+            <select asp-for="AreaId" class="form-select">
+                @foreach (var area in Model.Areas)
+                {
+                    <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-brand">Create Staff Account</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern align-middle">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Area</th></tr></thead>
+            <tbody>
+            @foreach (var staff in Model.ExistingStaff)
+            {
+                <tr>
+                    <td>@staff.First_Name @staff.Last_Name</td>
+                    <td>@staff.Email_Id</td>
+                    <td>@staff.Login?.Roll?.Roll_Name</td>
+                    <td>@staff.Area?.Area_Name, @staff.Area?.City?.City_Name</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

@@ -1,0 +1,51 @@
+@model ValueTuple<string, string, string, IReadOnlyList<ServiceOptionViewModel>, bool>
+@{
+    var sectionTitle = Model.Item1;
+    var sectionCopy = Model.Item2;
+    var fieldName = Model.Item3;
+    var options = Model.Item4;
+    var optional = Model.Item5;
+    var hasSelected = options.Any(o => o.IsSelected);
+}
+
+<div class="col-12 booking-service-section" data-service-section="@fieldName" data-optional="@optional.ToString().ToLowerInvariant()">
+    <div class="page-title-row">
+        <div>
+            <h3 class="h4 fw-bold mb-1">@sectionTitle</h3>
+            <p class="section-copy mb-0">@sectionCopy</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        @if (optional)
+        {
+            <div class="col-md-6 col-xl-4 booking-service-option" data-event-type-id="0">
+                <label class="service-card p-3 h-100 d-block">
+                    <input type="radio" class="form-check-input mb-3" name="@fieldName" value="" @(!hasSelected ? "checked" : null) />
+                    <h5 class="fw-bold">Skip this service</h5>
+                    <p class="small text-secondary mb-0">Continue booking without selecting this optional step.</p>
+                </label>
+            </div>
+        }
+        @foreach (var option in options)
+        {
+            <div class="col-md-6 col-xl-4 booking-service-option" data-event-type-id="@option.EventTypeId">
+                <label class="service-card p-3 h-100 d-block">
+                    <img src="@option.PhotoUrl" alt="@option.Name" />
+                    <div class="pt-3">
+                        <input type="radio" class="form-check-input mb-3" name="@fieldName" value="@option.Id" @(option.IsSelected ? "checked" : null) />
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="status-pill">@option.Category</span>
+                            <span class="price-pill">@option.Price.ToString("C0")</span>
+                        </div>
+                        <h5 class="fw-bold">@option.Name</h5>
+                        <p class="small text-secondary">@option.Description</p>
+                        <div class="small text-secondary">Provider: @option.ProviderName</div>
+                    </div>
+                </label>
+            </div>
+        }
+    </div>
+    <div class="pt-2">
+        <span class="text-danger field-validation-valid" data-valmsg-for="@fieldName" data-valmsg-replace="true"></span>
+    </div>
+</div>

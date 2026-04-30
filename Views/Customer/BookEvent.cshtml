@@ -1,0 +1,172 @@
+@model CustomerBookingViewModel
+@{
+    ViewData["Title"] = "Book Event";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Book Event</h1>
+            <p class="section-copy">This screen follows the plan flow: choose the event type, select party plot, caterer, optional decoration and music, transporter, review the selected services, then checkout and book.</p>
+        </div>
+        <a asp-action="TrackStatus" class="btn btn-outline-dark">View Order Status</a>
+    </div>
+
+    <form asp-action="BookEvent" method="post" class="row g-4" id="book-event-form">
+        @Html.AntiForgeryToken()
+        <div class="col-12">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-0"></div>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="EventTypeId" class="form-label">Event Type</label>
+            <select asp-for="EventTypeId" class="form-select" id="event-type-select">
+                @foreach (var evt in Model.EventTypes)
+                {
+                    <option value="@evt.Event_Id">@evt.Event_Type</option>
+                }
+            </select>
+            <span asp-validation-for="EventTypeId" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Date" class="form-label">Event Date</label>
+            <input asp-for="Date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="GuestCount" class="form-label">Guest Count</label>
+            <input asp-for="GuestCount" class="form-control" />
+            <span asp-validation-for="GuestCount" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Comment" class="form-label">Booking Comment</label>
+            <textarea asp-for="Comment" class="form-control" rows="2" placeholder="Optional comment for your event"></textarea>
+            <span asp-validation-for="Comment" class="text-danger"></span>
+        </div>
+
+        @await Html.PartialAsync("_ServiceSelectionSection", ("1. View Party Plot List", "Party plot is required. Same date and same party plot will not allow duplicate booking.", "PartyPlotId", Model.PartyPlots, false))
+        @await Html.PartialAsync("_ServiceSelectionSection", ("2. Caterer Detail View", "Caterer selection is required.", "CatererId", Model.Caterers, false))
+        @await Html.PartialAsync("_ServiceSelectionSection", ("3. View Decoration List", "Decoration can be selected or skipped.", "DecorationId", Model.Decorations, true))
+        @await Html.PartialAsync("_ServiceSelectionSection", ("4. See Music List", "Music can be selected or skipped.", "MusicId", Model.Musics, true))
+        @await Html.PartialAsync("_ServiceSelectionSection", ("5. View Transporter Detail", "Transporter selection is required before checkout.", "TransporterId", Model.Transporters, false))
+
+        <div class="col-12">
+            <div class="surface-card border p-4 booking-checkout-panel">
+                <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center mb-3">
+                    <div>
+                        <h3 class="h4 fw-bold mb-1">Checkout Summary</h3>
+                        <p class="section-copy mb-0">Selected services are listed here before booking, matching the plan’s checkout sequence.</p>
+                    </div>
+                    <div class="booking-total-pill">
+                        Estimated Total:
+                        <strong id="booking-total-amount">₹0</strong>
+                    </div>
+                </div>
+                <div id="selected-services-summary" class="selected-services-summary"></div>
+                <button type="submit" class="btn btn-brand btn-lg mt-4">Checkout and Book</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const form = document.getElementById("book-event-form");
+            const eventTypeSelect = document.getElementById("event-type-select");
+            const summaryNode = document.getElementById("selected-services-summary");
+            const totalNode = document.getElementById("booking-total-amount");
+            const requiredFields = ["PartyPlotId", "CatererId", "TransporterId"];
+            const currency = new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0
+            });
+
+            if (!form || !eventTypeSelect || !summaryNode || !totalNode) {
+                return;
+            }
+
+            const categoryLabels = {
+                PartyPlotId: "Party Plot",
+                CatererId: "Caterer",
+                DecorationId: "Decoration",
+                MusicId: "Music",
+                TransporterId: "Transporter"
+            };
+
+            const getCategoryLabel = (fieldName) => categoryLabels[fieldName] ?? fieldName;
+            const getCheckedInput = (fieldName) => form.querySelector(`input[name="${fieldName}"]:checked`);
+
+            const updateSummary = () => {
+                const selectedItems = [];
+                let total = 0;
+
+                document.querySelectorAll(".booking-service-section").forEach((section) => {
+                    const fieldName = section.dataset.serviceSection;
+                    const optional = section.dataset.optional === "true";
+                    const checkedInput = getCheckedInput(fieldName);
+                    const selectedCard = checkedInput?.closest(".service-card");
+
+                    if (!checkedInput || !checkedInput.value || !selectedCard) {
+                        selectedItems.push(`
+                            <div class="selected-service-row pending">
+                                <div>
+                                    <div class="fw-semibold">${getCategoryLabel(fieldName)}</div>
+                                    <div class="small text-secondary">${optional ? "Skipped for now" : "Selection required before checkout"}</div>
+                                </div>
+                                <span class="status-pill">${optional ? "Skipped" : "Pending"}</span>
+                            </div>`);
+                        return;
+                    }
+
+                    const name = selectedCard.querySelector("h5")?.textContent?.trim() ?? "";
+                    const priceText = selectedCard.querySelector(".price-pill")?.textContent?.trim() ?? "";
+                    const priceValue = Number(priceText.replace(/[^0-9.]/g, ""));
+                    total += Number.isFinite(priceValue) ? priceValue : 0;
+
+                    selectedItems.push(`
+                        <div class="selected-service-row">
+                            <div>
+                                <div class="fw-semibold">${getCategoryLabel(fieldName)}</div>
+                                <div class="small text-secondary">${name}</div>
+                            </div>
+                            <strong>${priceText}</strong>
+                        </div>`);
+                });
+
+                summaryNode.innerHTML = selectedItems.join("");
+                totalNode.textContent = currency.format(total);
+            };
+
+            eventTypeSelect.addEventListener("change", () => {
+                updateSummary();
+            });
+
+            form.addEventListener("change", updateSummary);
+
+            form.addEventListener("submit", (event) => {
+                updateSummary();
+
+                const missingRequired = requiredFields.filter((fieldName) => {
+                    const checkedInput = getCheckedInput(fieldName);
+                    return !checkedInput || !checkedInput.value;
+                });
+
+                if (missingRequired.length > 0) {
+                    event.preventDefault();
+
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Complete Required Steps",
+                            text: `Please select ${missingRequired.map(getCategoryLabel).join(", ")} before checkout.`
+                        });
+                    }
+                }
+            });
+
+            updateSummary();
+        })();
+    </script>
+}

@@ -1,0 +1,72 @@
+@model ManageServicesViewModel
+@{
+    ViewData["Title"] = "Manage Services";
+}
+
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row">
+        <div>
+            <h1 class="section-title">Service Person Manage On Services</h1>
+            <p class="section-copy">After approval and login, service persons can add their service entries here.</p>
+        </div>
+    </div>
+
+    <form asp-action="ManageServices" method="post" class="row g-3 mb-5">
+        @Html.AntiForgeryToken()
+        <div class="col-md-6">
+            <label asp-for="ServiceName" class="form-label"></label>
+            <input asp-for="ServiceName" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="ServiceCategory" class="form-label"></label>
+            <select asp-for="ServiceCategory" class="form-select">
+                <option>Party Plot</option>
+                <option>Caterer</option>
+                <option>Decoration</option>
+                <option>Music</option>
+                <option>Transporter</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="EventTypeId" class="form-label">Event Type</label>
+            <select asp-for="EventTypeId" class="form-select">
+                @foreach (var eventType in Model.EventTypes)
+                {
+                    <option value="@eventType.Event_Id">@eventType.Event_Type</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+        <div class="col-md-9">
+            <label asp-for="PhotoUrl" class="form-label"></label>
+            <input asp-for="PhotoUrl" class="form-control" />
+        </div>
+        <div class="col-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-brand" type="submit">Add Service</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-modern">
+            <thead><tr><th>Service</th><th>Category</th><th>Price</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var service in Model.ExistingServices)
+            {
+                <tr>
+                    <td>@service.Service_Name</td>
+                    <td>@service.Service_Category</td>
+                    <td>@service.Price.ToString("C0")</td>
+                    <td><span class="status-pill @(service.Is_Active ? "success" : "danger")">@(service.Is_Active ? "Active" : "Inactive")</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
