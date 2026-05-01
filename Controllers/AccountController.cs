@@ -53,12 +53,28 @@ namespace EventManagement.Controllers
 
         public async Task<IActionResult> Register()
         {
-            ViewBag.Areas = await _context.AreaMasters
-                .Include(a => a.City)
-                .ThenInclude(c => c!.State)
-                .OrderBy(a => a.Area_Name)
-                .ToListAsync();
+            ViewBag.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
             return View();
+        }
+
+        public async Task<IActionResult> GetCitiesByState(int stateId)
+        {
+            var cities = await _context.CityMasters
+                .Where(c => c.State_Id_fk == stateId && c.City_Status)
+                .OrderBy(c => c.City_Name)
+                .Select(c => new { c.City_Id, c.City_Name })
+                .ToListAsync();
+            return Json(cities);
+        }
+
+        public async Task<IActionResult> GetAreasByCity(int cityId)
+        {
+            var areas = await _context.AreaMasters
+                .Where(a => a.City_Id_fk == cityId && a.Area_Status)
+                .OrderBy(a => a.Area_Name)
+                .Select(a => new { a.Area_Id, a.Area_Name })
+                .ToListAsync();
+            return Json(areas);
         }
 
         [HttpPost]
@@ -71,8 +87,15 @@ namespace EventManagement.Controllers
             string email,
             string gender,
             int areaId,
-            string password)
+            string password,
+            string confirmPassword)
         {
+            if (password != confirmPassword)
+            {
+                TempData["Error"] = "Password and confirm password do not match.";
+                return RedirectToAction(nameof(Register));
+            }
+
             if (await _context.LoginDetails.AnyAsync(l => l.User_Name == email) ||
                 await _context.UserRegistrationDetails.AnyAsync(u => u.Email_Id == email))
             {
@@ -114,11 +137,7 @@ namespace EventManagement.Controllers
 
         public async Task<IActionResult> ServiceProviderRegister()
         {
-            ViewBag.Areas = await _context.AreaMasters
-                .Include(a => a.City)
-                .ThenInclude(c => c!.State)
-                .OrderBy(a => a.Area_Name)
-                .ToListAsync();
+            ViewBag.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
             return View();
         }
 
@@ -127,6 +146,9 @@ namespace EventManagement.Controllers
         public async Task<IActionResult> ServiceProviderRegister(
             string providerName,
             string email,
+            string mobileNo,
+            string shopName,
+            string gender,
             string address,
             int areaId,
             string serviceType,
@@ -159,6 +181,9 @@ namespace EventManagement.Controllers
             {
                 Service_Provider_Name = providerName,
                 Email_Id = email,
+                Mobile_No = mobileNo,
+                Shop_Name = shopName,
+                Gender = gender,
                 Address = address,
                 Service_Provider_Area_Id_fk = areaId,
                 Service_Provider_Type = serviceType,

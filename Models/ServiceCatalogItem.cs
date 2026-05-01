@@ -24,6 +24,9 @@ namespace EventManagement.Models
         [Column(TypeName = "decimal(15,2)")]
         public decimal Price { get; set; }
 
+        [StringLength(30)]
+        public string Price_Type { get; set; } = "For All";
+
         [StringLength(500)]
         public string Photo_Url { get; set; } = string.Empty;
 

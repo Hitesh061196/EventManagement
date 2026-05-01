@@ -22,71 +22,113 @@
                         <span class="fw-semibold">@service.Service_Name</span>
                         <span class="price-pill">@service.Price.ToString("C0")</span>
                     </div>
-                    <div class="small text-secondary">@service.Service_Category</div>
+                    <div class="small text-secondary">@service.Service_Category &nbsp;|&nbsp; @service.Price_Type</div>
                 </div>
             </div>
         }
     </div>
 
-    <h4 class="mb-3">Service Orders</h4>
+    <h4 class="mb-3">View Order For Services</h4>
     @if (!Model.Orders.Any())
     {
         <div class="empty-state">No any order booking.</div>
     }
     else
     {
-        <div class="row g-4">
-            @foreach (var order in Model.Orders)
-            {
-                <div class="col-12">
-                    <div class="timeline-card p-4">
-                        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
-                            <div>
-                                <h5 class="fw-bold mb-1">@order.ServiceCatalogItem?.Service_Name</h5>
-                                <div class="small text-secondary">@order.Booking?.Customer?.First_Name @order.Booking?.Customer?.Last_Name • @order.Booking?.Date.ToString("dd MMM yyyy")</div>
-                            </div>
-                            <span class="status-pill @(order.Confirmation_Status == "Confirmed" ? "success" : "warning")">@order.Confirmation_Status</span>
-                        </div>
+        <div class="table-responsive mb-4">
+            <table class="table table-modern align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Event</th>
+                        <th>Booking Date</th>
+                        <th>Guest Count</th>
+                        <th>Occasion Date</th>
+                        <th>From Time – To Time</th>
+                        <th>Status</th>
+                        <th>Manage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @{int rowNo = 1;}
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@(rowNo++)</td>
+                        <td>@order.Booking?.EventType?.Event_Type</td>
+                        <td>@order.Booking?.Created_On.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        <td>@order.Booking?.Guest_Count</td>
+                        <td>@order.Booking?.Date.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(order.Booking?.From_Time))
+                            {
+                                @($"{order.Booking.From_Time} – {order.Booking.To_Time}")
+                            }
+                            else
+                            {
+                                <span class="text-secondary">—</span>
+                            }
+                        </td>
+                        <td><span class="status-pill @(order.Confirmation_Status == "Confirmed" ? "success" : "warning")">@order.Confirmation_Status</span></td>
+                        <td>
+                            <button class="btn btn-outline-dark btn-sm"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#order-detail-@order.Booking_Service_Detail_Id">
+                                Manage
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="order-detail-@order.Booking_Service_Detail_Id">
+                        <td colspan="8">
+                            <div class="p-3 border rounded bg-light">
+                                <div class="fw-semibold mb-2">
+                                    @order.ServiceCatalogItem?.Service_Name &nbsp;•&nbsp;
+                                    @order.Booking?.Customer?.First_Name @order.Booking?.Customer?.Last_Name
+                                </div>
+                                @{
+                                    var currentStage = Model.OrderCurrentStages.GetValueOrDefault(order.Booking_Service_Detail_Id, "Confirm");
+                                }
 
-                        <div class="d-flex flex-wrap gap-2 mb-3">
-                            <form asp-action="ConfirmOrder" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@order.Booking_Service_Detail_Id" />
-                                <input type="hidden" name="providerComment" value="Order confirmed by service person." />
-                                <button class="btn btn-dark btn-sm">Confirm Order</button>
-                            </form>
-                        </div>
-
-                        <form asp-action="UpdateStatus" method="post" enctype="multipart/form-data" class="row g-3">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="bookingServiceId" value="@order.Booking_Service_Detail_Id" />
-                            <div class="col-md-4">
-                                <select name="stage" class="form-select">
-                                    <option>Collect Material</option>
-                                    <option>Reached all Members</option>
-                                    <option>Manage Party Plot</option>
-                                    <option>Completion of work</option>
-                                </select>
+                                @if (currentStage == "Confirm")
+                                {
+                                    <form asp-action="ConfirmOrder" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@order.Booking_Service_Detail_Id" />
+                                        <input type="hidden" name="providerComment" value="Order confirmed by service person." />
+                                        <button class="btn btn-dark btn-sm">Confirm Order</button>
+                                    </form>
+                                }
+                                else if (currentStage != "Work Finish")
+                                {
+                                    <form asp-action="UpdateStatus" method="post" enctype="multipart/form-data" class="row g-3 mt-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="bookingServiceId" value="@order.Booking_Service_Detail_Id" />
+                                        <input type="hidden" name="stage" value="@currentStage" />
+                                        <input type="hidden" name="status" value="true" />
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-semibold">Status Description</label>
+                                            <input type="text" name="description" class="form-control form-control-sm" placeholder="Describe the current activity..." required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Status Photo</label>
+                                            <input type="file" name="photo" class="form-control form-control-sm" accept="image/*" />
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button class="btn btn-brand btn-sm w-100">@currentStage</button>
+                                        </div>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="status-pill success">Work Finish — Completed</span>
+                                }
                             </div>
-                            <div class="col-md-2">
-                                <select name="status" class="form-select">
-                                    <option value="true">Completed</option>
-                                    <option value="false">Pending</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="file" name="photo" class="form-control" accept="image/*" />
-                            </div>
-                            <div class="col-md-3">
-                                <input type="text" name="description" class="form-control" placeholder="Description" />
-                            </div>
-                            <div class="col-12">
-                                <button class="btn btn-brand btn-sm">Update Status</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
     }
 </section>

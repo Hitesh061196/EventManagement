@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Register";
-    var areas = ViewBag.Areas as List<AreaMaster> ?? new();
+    var states = ViewBag.States as List<StateMaster> ?? new();
 }
 
 <div class="row justify-content-center">
@@ -9,7 +9,7 @@
             <h1 class="section-title mb-2">Customer Registration</h1>
             <p class="section-copy mb-4">This matches the plan step where the user registration form is filled before login and booking.</p>
 
-            <form method="post" class="row g-3">
+            <form method="post" class="row g-3" id="register-form">
                 @Html.AntiForgeryToken()
                 <div class="col-md-6">
                     <label class="form-label">First Name</label>
@@ -24,24 +24,42 @@
                     <input name="email" type="email" class="form-control" required />
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Contact No</label>
+                    <label class="form-label">Mobile No.</label>
                     <input name="contactNo" class="form-control" maxlength="10" required />
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Gender</label>
-                    <select name="gender" class="form-select" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                    <label class="form-label d-block">Gender</label>
+                    <div class="d-flex gap-4 mt-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Male" checked required />
+                            <label class="form-check-label" for="genderMale">Male</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Female" />
+                            <label class="form-check-label" for="genderFemale">Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">State</label>
+                    <select name="stateId" id="stateSelect" class="form-select" required>
+                        <option value="">-- Select State --</option>
+                        @foreach (var state in states)
+                        {
+                            <option value="@state.State_Id">@state.State_Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">City</label>
+                    <select name="cityId" id="citySelect" class="form-select" required>
+                        <option value="">-- Select City --</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Area</label>
-                    <select name="areaId" class="form-select" required>
-                        @foreach (var area in areas)
-                        {
-                            <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
-                        }
+                    <select name="areaId" id="areaSelect" class="form-select" required>
+                        <option value="">-- Select Area --</option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -50,7 +68,11 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Password</label>
-                    <input name="password" type="password" class="form-control" required />
+                    <input name="password" type="password" id="password" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Confirm Password</label>
+                    <input name="confirmPassword" type="password" id="confirmPassword" class="form-control" required />
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-brand">Register</button>
@@ -60,3 +82,46 @@
         </section>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const stateSelect = document.getElementById("stateSelect");
+            const citySelect = document.getElementById("citySelect");
+            const areaSelect = document.getElementById("areaSelect");
+
+            const resetSelect = (sel, placeholder) => {
+                sel.innerHTML = `<option value="">${placeholder}</option>`;
+            };
+
+            stateSelect.addEventListener("change", async () => {
+                resetSelect(citySelect, "-- Select City --");
+                resetSelect(areaSelect, "-- Select Area --");
+                const stateId = stateSelect.value;
+                if (!stateId) return;
+                const res = await fetch(`/Account/GetCitiesByState?stateId=${stateId}`);
+                const cities = await res.json();
+                cities.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.city_Id;
+                    opt.textContent = c.city_Name;
+                    citySelect.appendChild(opt);
+                });
+            });
+
+            citySelect.addEventListener("change", async () => {
+                resetSelect(areaSelect, "-- Select Area --");
+                const cityId = citySelect.value;
+                if (!cityId) return;
+                const res = await fetch(`/Account/GetAreasByCity?cityId=${cityId}`);
+                const areas = await res.json();
+                areas.forEach(a => {
+                    const opt = document.createElement("option");
+                    opt.value = a.area_Id;
+                    opt.textContent = a.area_Name;
+                    areaSelect.appendChild(opt);
+                });
+            });
+        })();
+    </script>
+}

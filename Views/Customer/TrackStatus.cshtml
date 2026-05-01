@@ -28,6 +28,10 @@
                                 <div class="small text-secondary">Booking Reference</div>
                                 <h4 class="fw-bold mb-1">@item.Booking.Booking_Reference</h4>
                                 <div class="small text-secondary">@item.Booking.EventType?.Event_Type on @item.Booking.Date.ToString("dd MMM yyyy") for @item.Booking.Guest_Count guests</div>
+                                @if (!string.IsNullOrEmpty(item.Booking.Event_Time))
+                                {
+                                    <div class="small text-secondary">@item.Booking.Event_Time &nbsp;|&nbsp; @item.Booking.From_Time – @item.Booking.To_Time</div>
+                                }
                             </div>
                             <div class="text-lg-end">
                                 <div class="price-pill mb-2">@item.Booking.Ammount.ToString("C0")</div>

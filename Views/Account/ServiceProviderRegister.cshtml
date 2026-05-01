@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Service Provider Register";
-    var areas = ViewBag.Areas as List<AreaMaster> ?? new();
+    var states = ViewBag.States as List<StateMaster> ?? new();
 }
 
 <div class="row justify-content-center">
@@ -20,6 +20,27 @@
                     <input name="email" type="email" class="form-control" required />
                 </div>
                 <div class="col-md-6">
+                    <label class="form-label">Mobile No.</label>
+                    <input name="mobileNo" class="form-control" maxlength="15" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Shop Name</label>
+                    <input name="shopName" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label d-block">Gender</label>
+                    <div class="d-flex gap-4 mt-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="spGenderMale" value="Male" checked required />
+                            <label class="form-check-label" for="spGenderMale">Male</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="gender" id="spGenderFemale" value="Female" />
+                            <label class="form-check-label" for="spGenderFemale">Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <label class="form-label">Service Type</label>
                     <select name="serviceType" class="form-select" required>
                         <option>Party Plot</option>
@@ -29,13 +50,26 @@
                         <option>Transporter</option>
                     </select>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Area</label>
-                    <select name="areaId" class="form-select" required>
-                        @foreach (var area in areas)
+                <div class="col-md-4">
+                    <label class="form-label">State</label>
+                    <select name="stateId" id="spStateSelect" class="form-select" required>
+                        <option value="">-- Select State --</option>
+                        @foreach (var state in states)
                         {
-                            <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
+                            <option value="@state.State_Id">@state.State_Name</option>
                         }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">City</label>
+                    <select name="cityId" id="spCitySelect" class="form-select" required>
+                        <option value="">-- Select City --</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Area</label>
+                    <select name="areaId" id="spAreaSelect" class="form-select" required>
+                        <option value="">-- Select Area --</option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -44,7 +78,7 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label">Profile Image Url</label>
-                    <input name="profileImageUrl" class="form-control" placeholder="https://..." required />
+                    <input name="profileImageUrl" class="form-control" placeholder="https://..." />
                 </div>
                 <div class="col-12">
                     <label class="form-label">Description</label>
@@ -57,3 +91,46 @@
         </section>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const stateSelect = document.getElementById("spStateSelect");
+            const citySelect = document.getElementById("spCitySelect");
+            const areaSelect = document.getElementById("spAreaSelect");
+
+            const resetSelect = (sel, placeholder) => {
+                sel.innerHTML = `<option value="">${placeholder}</option>`;
+            };
+
+            stateSelect.addEventListener("change", async () => {
+                resetSelect(citySelect, "-- Select City --");
+                resetSelect(areaSelect, "-- Select Area --");
+                const stateId = stateSelect.value;
+                if (!stateId) return;
+                const res = await fetch(`/Account/GetCitiesByState?stateId=${stateId}`);
+                const cities = await res.json();
+                cities.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.city_Id;
+                    opt.textContent = c.city_Name;
+                    citySelect.appendChild(opt);
+                });
+            });
+
+            citySelect.addEventListener("change", async () => {
+                resetSelect(areaSelect, "-- Select Area --");
+                const cityId = citySelect.value;
+                if (!cityId) return;
+                const res = await fetch(`/Account/GetAreasByCity?cityId=${cityId}`);
+                const areas = await res.json();
+                areas.forEach(a => {
+                    const opt = document.createElement("option");
+                    opt.value = a.area_Id;
+                    opt.textContent = a.area_Name;
+                    areaSelect.appendChild(opt);
+                });
+            });
+        })();
+    </script>
+}

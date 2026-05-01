@@ -46,10 +46,48 @@ namespace EventManagement.Controllers
                 .OrderByDescending(b => b.Booking!.Date)
                 .ToListAsync();
 
+            var bookingIds = orders.Select(o => o.Booking_Id_fk).Distinct().ToList();
+            var allStatuses = await _context.EventStatusMasters
+                .Where(s => bookingIds.Contains(s.Event_Booking_Cart_fk))
+                .OrderByDescending(s => s.Date)
+                .ToListAsync();
+            var latestStatuses = allStatuses
+                .GroupBy(s => s.Event_Booking_Cart_fk)
+                .Select(g => g.First())
+                .ToList();
+
+            var stages = new[] { "Confirm", "Collect Material", "Reached", "Work Start", "Work Running", "Work Finish" };
+
+            var orderStages = new Dictionary<int, string>();
+            foreach (var order in orders)
+            {
+                if (order.Confirmation_Status != "Confirmed")
+                {
+                    orderStages[order.Booking_Service_Detail_Id] = "Confirm";
+                }
+                else
+                {
+                    var lastStatus = latestStatuses.FirstOrDefault(s => s.Event_Booking_Cart_fk == order.Booking_Id_fk);
+                    if (lastStatus == null)
+                    {
+                        orderStages[order.Booking_Service_Detail_Id] = "Collect Material";
+                    }
+                    else
+                    {
+                        var lastStage = lastStatus.Description?.Split(':').FirstOrDefault()?.Trim() ?? string.Empty;
+                        var idx = Array.IndexOf(stages, lastStage);
+                        orderStages[order.Booking_Service_Detail_Id] = idx >= 0 && idx < stages.Length - 1
+                            ? stages[idx + 1]
+                            : "Work Finish";
+                    }
+                }
+            }
+
             var model = new ServiceProviderDashboardViewModel
             {
                 Services = services,
-                Orders = orders
+                Orders = orders,
+                OrderCurrentStages = orderStages
             };
 
             return View(model);
@@ -108,11 +146,25 @@ namespace EventManagement.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ModelState.Remove(nameof(model.PhotoUrl));
+
             if (!ModelState.IsValid)
             {
                 model.EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == "Active").OrderBy(e => e.Event_Type).ToListAsync();
                 model.ExistingServices = await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync();
                 return View(model);
+            }
+
+            var photoUrl = model.PhotoUrl;
+            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+            {
+                var uploads = Path.Combine(_env.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploads);
+                var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(model.PhotoFile.FileName)}";
+                var filePath = Path.Combine(uploads, fileName);
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await model.PhotoFile.CopyToAsync(stream);
+                photoUrl = "/uploads/" + fileName;
             }
 
             _context.ServiceCatalogItems.Add(new ServiceCatalogItem
@@ -122,7 +174,8 @@ namespace EventManagement.Controllers
                 Event_Type_Id_fk = model.EventTypeId,
                 Service_Provider_Id_fk = provider.Service_Provider_Id,
                 Price = model.Price,
-                Photo_Url = model.PhotoUrl,
+                Price_Type = model.PriceType,
+                Photo_Url = photoUrl ?? string.Empty,
                 Description = model.Description,
                 Is_Active = true
             });

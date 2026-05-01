@@ -18,15 +18,12 @@
             <input asp-for="FirstName" class="form-control" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">Last Name</label>
-            <input asp-for="LastName" class="form-control" />
+            <label class="form-label">Middle Name</label>
+            <input asp-for="MiddleName" class="form-control" />
         </div>
         <div class="col-md-4">
-            <label class="form-label">Role</label>
-            <select asp-for="RoleName" class="form-select">
-                <option>Event Manager</option>
-                <option>Event Planner</option>
-            </select>
+            <label class="form-label">Last Name</label>
+            <input asp-for="LastName" class="form-control" />
         </div>
         <div class="col-md-4">
             <label class="form-label">Email</label>
@@ -37,12 +34,53 @@
             <input asp-for="ContactNo" class="form-control" />
         </div>
         <div class="col-md-4">
+            <label class="form-label d-block">Gender</label>
+            <div class="d-flex gap-4 mt-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="Gender" id="emGenderMale" value="Male" />
+                    <label class="form-check-label" for="emGenderMale">Male</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="Gender" id="emGenderFemale" value="Female" />
+                    <label class="form-check-label" for="emGenderFemale">Female</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">State</label>
+            <select asp-for="StateId" id="emStateSelect" class="form-select">
+                <option value="0">-- Select State --</option>
+                @foreach (var state in Model.States)
+                {
+                    <option value="@state.State_Id">@state.State_Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">City</label>
+            <select asp-for="CityId" id="emCitySelect" class="form-select">
+                <option value="0">-- Select City --</option>
+            </select>
+        </div>
+        <div class="col-md-4">
             <label class="form-label">Area</label>
-            <select asp-for="AreaId" class="form-select">
+            <select asp-for="AreaId" id="emAreaSelect" class="form-select">
+                <option value="0">-- Select Area --</option>
                 @foreach (var area in Model.Areas)
                 {
-                    <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name, @area.City?.State?.State_Name</option>
+                    <option value="@area.Area_Id">@area.Area_Name, @area.City?.City_Name</option>
                 }
+            </select>
+        </div>
+        <div class="col-md-8">
+            <label class="form-label">Address</label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Role</label>
+            <select asp-for="RoleName" class="form-select">
+                <option>Event Manager</option>
+                <option>Event Planner</option>
             </select>
         </div>
         <div class="col-12">
@@ -57,7 +95,7 @@
             @foreach (var staff in Model.ExistingStaff)
             {
                 <tr>
-                    <td>@staff.First_Name @staff.Last_Name</td>
+                    <td>@staff.First_Name @staff.Middle_Name @staff.Last_Name</td>
                     <td>@staff.Email_Id</td>
                     <td>@staff.Login?.Roll?.Roll_Name</td>
                     <td>@staff.Area?.Area_Name, @staff.Area?.City?.City_Name</td>
@@ -67,3 +105,46 @@
         </table>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const stateSelect = document.getElementById("emStateSelect");
+            const citySelect = document.getElementById("emCitySelect");
+            const areaSelect = document.getElementById("emAreaSelect");
+
+            const resetSelect = (sel, placeholder) => {
+                sel.innerHTML = `<option value="0">${placeholder}</option>`;
+            };
+
+            stateSelect.addEventListener("change", async () => {
+                resetSelect(citySelect, "-- Select City --");
+                resetSelect(areaSelect, "-- Select Area --");
+                const stateId = stateSelect.value;
+                if (!stateId || stateId === "0") return;
+                const res = await fetch(`/Account/GetCitiesByState?stateId=${stateId}`);
+                const cities = await res.json();
+                cities.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.city_Id;
+                    opt.textContent = c.city_Name;
+                    citySelect.appendChild(opt);
+                });
+            });
+
+            citySelect.addEventListener("change", async () => {
+                resetSelect(areaSelect, "-- Select Area --");
+                const cityId = citySelect.value;
+                if (!cityId || cityId === "0") return;
+                const res = await fetch(`/Account/GetAreasByCity?cityId=${cityId}`);
+                const areas = await res.json();
+                areas.forEach(a => {
+                    const opt = document.createElement("option");
+                    opt.value = a.area_Id;
+                    opt.textContent = a.area_Name;
+                    areaSelect.appendChild(opt);
+                });
+            });
+        })();
+    </script>
+}

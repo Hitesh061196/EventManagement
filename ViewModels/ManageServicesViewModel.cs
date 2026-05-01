@@ -20,8 +20,13 @@ namespace EventManagement.ViewModels
         public decimal Price { get; set; }
 
         [Required]
+        [StringLength(30)]
+        public string PriceType { get; set; } = "For All";
+
         [StringLength(500)]
         public string PhotoUrl { get; set; } = string.Empty;
+
+        public IFormFile? PhotoFile { get; set; }
 
         [Required]
         [StringLength(1000)]
