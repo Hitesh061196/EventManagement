@@ -34,7 +34,9 @@
                         <form asp-action="ToggleEventType" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@evt.Event_Id" />
-                            <button class="btn btn-outline-dark btn-sm">Toggle</button>
+                            <button class="btn btn-sm @(evt.Event_Type_Status == "Active" ? "btn-outline-danger" : "btn-outline-success")" type="submit">
+                                @(evt.Event_Type_Status == "Active" ? "Set Inactive" : "Set Active")
+                            </button>
                         </form>
                     </td>
                 </tr>

@@ -43,6 +43,11 @@ namespace EventManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmOrder(int id)
         {
+            if (HttpContext.Session.GetString("Role") != "Event Manager")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             var booking = await _context.BookingCartDetails.FindAsync(id);
             if (booking != null)
             {

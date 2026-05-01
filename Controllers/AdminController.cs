@@ -112,6 +112,20 @@ namespace EventManagement.Controllers
             return RedirectToAction(nameof(ManageCity));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCity(int id)
+        {
+            var city = await _context.CityMasters.FindAsync(id);
+            if (city != null)
+            {
+                city.City_Status = !city.City_Status;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(ManageCity));
+        }
+
         public async Task<IActionResult> ManageArea()
         {
             if (!IsAdmin())
@@ -272,10 +286,14 @@ namespace EventManagement.Controllers
             {
                 States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync(),
                 Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync(),
+                AvailableRoles = await _context.RollDetails
+                    .Where(r => AppConstants.Roles.StaffRoles.Contains(r.Roll_Name))
+                    .OrderBy(r => r.Roll_Name)
+                    .ToListAsync(),
                 ExistingStaff = await _context.UserRegistrationDetails
                     .Include(u => u.Area).ThenInclude(a => a!.City).ThenInclude(c => c!.State)
                     .Include(u => u.Login).ThenInclude(l => l!.Roll)
-                    .Where(u => u.Login != null && (u.Login.Roll!.Roll_Name == "Event Manager" || u.Login.Roll.Roll_Name == "Event Planner"))
+                    .Where(u => u.Login != null && AppConstants.Roles.StaffRoles.Contains(u.Login.Roll!.Roll_Name))
                     .OrderBy(u => u.First_Name)
                     .ToListAsync()
             };
@@ -290,6 +308,9 @@ namespace EventManagement.Controllers
             {
                 model.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
                 model.Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync();
+                model.AvailableRoles = await _context.RollDetails
+                    .Where(r => AppConstants.Roles.StaffRoles.Contains(r.Roll_Name))
+                    .OrderBy(r => r.Roll_Name).ToListAsync();
                 model.ExistingStaff = Array.Empty<UserRegistrationDetail>();
                 return View("ManageEventManagers", model);
             }
@@ -301,7 +322,7 @@ namespace EventManagement.Controllers
             }
 
             var roleId = await _context.RollDetails.Where(r => r.Roll_Name == model.RoleName).Select(r => r.Roll_Id).FirstAsync();
-            var generatedPassword = model.RoleName == "Event Planner" ? "planner123" : "manager123";
+            var generatedPassword = AppConstants.GeneratePassword();
 
             var login = new LoginDetail
             {

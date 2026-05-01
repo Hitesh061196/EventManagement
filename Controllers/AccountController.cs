@@ -138,6 +138,11 @@ namespace EventManagement.Controllers
         public async Task<IActionResult> ServiceProviderRegister()
         {
             ViewBag.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
+            ViewBag.ServiceTypes = await _context.ServiceProviderTypeMasters
+                .Where(t => t.Is_Active)
+                .OrderBy(t => t.Provider_Type_Id)
+                .Select(t => t.Type_Name)
+                .ToListAsync();
             return View();
         }
 

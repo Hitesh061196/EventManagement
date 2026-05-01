@@ -40,11 +40,10 @@
         <div class="col-md-4">
             <label asp-for="EventTime" class="form-label">Event Time</label>
             <select asp-for="EventTime" class="form-select">
-                <option value="Dinner">Dinner</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Breakfast">Breakfast</option>
-                <option value="Evening">Evening</option>
-                <option value="Full Day">Full Day</option>
+                @foreach (var et in Model.EventTimes)
+                {
+                    <option value="@et.Event_Time_Name">@et.Event_Time_Name</option>
+                }
             </select>
             <span asp-validation-for="EventTime" class="text-danger"></span>
         </div>
@@ -60,7 +59,7 @@
         </div>
         <div class="col-12">
             <label asp-for="Comment" class="form-label">Booking Comment</label>
-            <textarea asp-for="Comment" class="form-control" rows="2" placeholder="Optional comment for your event"></textarea>
+            <textarea asp-for="Comment" class="form-control" rows="2" placeholder="comment for your event"></textarea>
             <span asp-validation-for="Comment" class="text-danger"></span>
         </div>
 

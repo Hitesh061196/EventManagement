@@ -56,29 +56,29 @@ namespace EventManagement.Controllers
                 .Select(g => g.First())
                 .ToList();
 
-            var stages = new[] { "Confirm", "Collect Material", "Reached", "Work Start", "Work Running", "Work Finish" };
+            var stages = AppConstants.WorkStages;
 
             var orderStages = new Dictionary<int, string>();
             foreach (var order in orders)
             {
-                if (order.Confirmation_Status != "Confirmed")
+                if (order.Confirmation_Status != AppConstants.ConfirmationStatus.Confirmed)
                 {
-                    orderStages[order.Booking_Service_Detail_Id] = "Confirm";
+                    orderStages[order.Booking_Service_Detail_Id] = stages[0];
                 }
                 else
                 {
                     var lastStatus = latestStatuses.FirstOrDefault(s => s.Event_Booking_Cart_fk == order.Booking_Id_fk);
                     if (lastStatus == null)
                     {
-                        orderStages[order.Booking_Service_Detail_Id] = "Collect Material";
+                        orderStages[order.Booking_Service_Detail_Id] = stages[1];
                     }
                     else
                     {
                         var lastStage = lastStatus.Description?.Split(':').FirstOrDefault()?.Trim() ?? string.Empty;
-                        var idx = Array.IndexOf(stages, lastStage);
-                        orderStages[order.Booking_Service_Detail_Id] = idx >= 0 && idx < stages.Length - 1
+                        var idx = stages.ToList().IndexOf(lastStage);
+                        orderStages[order.Booking_Service_Detail_Id] = idx >= 0 && idx < stages.Count - 1
                             ? stages[idx + 1]
-                            : "Work Finish";
+                            : stages[stages.Count - 1];
                     }
                 }
             }
@@ -123,10 +123,12 @@ namespace EventManagement.Controllers
             var provider = await GetProviderAsync();
             var model = new ManageServicesViewModel
             {
-                EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == "Active").OrderBy(e => e.Event_Type).ToListAsync(),
+                EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active).OrderBy(e => e.Event_Type).ToListAsync(),
                 ExistingServices = provider == null
                     ? Array.Empty<ServiceCatalogItem>()
-                    : await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync()
+                    : await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync(),
+                ProviderCategory = provider?.Service_Provider_Type ?? string.Empty,
+                PriceTypes = AppConstants.PriceTypes
             };
             return View(model);
         }
@@ -150,8 +152,10 @@ namespace EventManagement.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == "Active").OrderBy(e => e.Event_Type).ToListAsync();
+                model.EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active).OrderBy(e => e.Event_Type).ToListAsync();
                 model.ExistingServices = await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync();
+                model.ProviderCategory = provider.Service_Provider_Type;
+                model.PriceTypes = AppConstants.PriceTypes;
                 return View(model);
             }
 

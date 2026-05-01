@@ -45,7 +45,9 @@
                         <form asp-action="ToggleArea" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@area.Area_Id" />
-                            <button class="btn btn-outline-dark btn-sm">Toggle</button>
+                            <button class="btn btn-sm @(area.Area_Status ? "btn-outline-danger" : "btn-outline-success")" type="submit">
+                                @(area.Area_Status ? "Set Inactive" : "Set Active")
+                            </button>
                         </form>
                     </td>
                 </tr>

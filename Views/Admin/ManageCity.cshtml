@@ -32,7 +32,7 @@
 
     <div class="table-responsive">
         <table class="table table-modern">
-            <thead><tr><th>State</th><th>City</th><th>Status</th></tr></thead>
+            <thead><tr><th>State</th><th>City</th><th>Status</th><th>Toggle</th></tr></thead>
             <tbody>
             @foreach (var city in Model)
             {
@@ -40,6 +40,15 @@
                     <td>@city.State?.State_Name</td>
                     <td>@city.City_Name</td>
                     <td><span class="status-pill @(city.City_Status ? "success" : "danger")">@(city.City_Status ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <form asp-action="ToggleCity" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@city.City_Id" />
+                            <button class="btn btn-sm @(city.City_Status ? "btn-outline-danger" : "btn-outline-success")" type="submit">
+                                @(city.City_Status ? "Set Inactive" : "Set Active")
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             }
             </tbody>
