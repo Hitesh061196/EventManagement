@@ -34,6 +34,15 @@ namespace EventManagement.Models
         [StringLength(40)]
         public string Payment_Status { get; set; } = "Pending";
 
+        [StringLength(30)]
+        public string Event_Time { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        public string From_Time { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        public string To_Time { get; set; } = string.Empty;
+
         public bool Event_Manager_Approved { get; set; }
 
         public int? Event_Manager_Login_Id_fk { get; set; }

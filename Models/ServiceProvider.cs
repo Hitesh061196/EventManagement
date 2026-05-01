@@ -13,6 +13,16 @@ namespace EventManagement.Models
         public string Service_Provider_Name { get; set; } = string.Empty;
         [StringLength(30)]
         public string Email_Id { get; set; } = string.Empty;
+
+        [StringLength(15)]
+        public string Mobile_No { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        public string Shop_Name { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        public string Gender { get; set; } = string.Empty;
+
         [StringLength(50)]
         public string Address { get; set; } = string.Empty;
         public int Service_Provider_Area_Id_fk { get; set; }

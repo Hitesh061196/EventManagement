@@ -28,6 +28,16 @@ namespace EventManagement.ViewModels
         [Range(1, int.MaxValue)]
         public int TransporterId { get; set; }
 
+        [Required]
+        [StringLength(30)]
+        public string EventTime { get; set; } = "Dinner";
+
+        [StringLength(10)]
+        public string FromTime { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        public string ToTime { get; set; } = string.Empty;
+
         [StringLength(200)]
         public string Comment { get; set; } = string.Empty;
 

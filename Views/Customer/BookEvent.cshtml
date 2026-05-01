@@ -33,9 +33,30 @@
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="col-md-4">
-            <label asp-for="GuestCount" class="form-label">Guest Count</label>
+            <label asp-for="GuestCount" class="form-label">No. of Guest</label>
             <input asp-for="GuestCount" class="form-control" />
             <span asp-validation-for="GuestCount" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="EventTime" class="form-label">Event Time</label>
+            <select asp-for="EventTime" class="form-select">
+                <option value="Dinner">Dinner</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Evening">Evening</option>
+                <option value="Full Day">Full Day</option>
+            </select>
+            <span asp-validation-for="EventTime" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="FromTime" class="form-label">From Time</label>
+            <input asp-for="FromTime" type="time" class="form-control" />
+            <span asp-validation-for="FromTime" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="ToTime" class="form-label">To Time</label>
+            <input asp-for="ToTime" type="time" class="form-control" />
+            <span asp-validation-for="ToTime" class="text-danger"></span>
         </div>
         <div class="col-12">
             <label asp-for="Comment" class="form-label">Booking Comment</label>

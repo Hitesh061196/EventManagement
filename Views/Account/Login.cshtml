@@ -21,7 +21,21 @@
                 <div class="col-12">
                     <button type="submit" class="btn btn-brand w-100">Login</button>
                 </div>
+                <div class="col-12 text-end">
+                    <a href="#" class="small" style="color: #e91e8c;" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forget Password?</a>
+                </div>
             </form>
+
+            <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content surface-card p-4">
+                        <h5 class="fw-bold mb-3">Forget Password</h5>
+                        <p class="section-copy mb-3">Please contact the admin with your registered email to reset your password.</p>
+                        <p class="small text-secondary">Alternatively, if you are a service person, your password was sent to your email during account approval.</p>
+                        <button class="btn btn-brand btn-sm mt-2" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="mt-4 small text-secondary">
                 Demo admin: <strong>admin</strong> / <strong>admin123</strong><br />

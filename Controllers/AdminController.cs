@@ -270,6 +270,7 @@ namespace EventManagement.Controllers
 
             var model = new CreateEventManagerViewModel
             {
+                States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync(),
                 Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync(),
                 ExistingStaff = await _context.UserRegistrationDetails
                     .Include(u => u.Area).ThenInclude(a => a!.City).ThenInclude(c => c!.State)
@@ -287,6 +288,7 @@ namespace EventManagement.Controllers
         {
             if (!ModelState.IsValid)
             {
+                model.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
                 model.Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync();
                 model.ExistingStaff = Array.Empty<UserRegistrationDetail>();
                 return View("ManageEventManagers", model);
@@ -316,17 +318,18 @@ namespace EventManagement.Controllers
             _context.UserRegistrationDetails.Add(new UserRegistrationDetail
             {
                 First_Name = model.FirstName,
+                Middle_Name = model.MiddleName,
                 Last_Name = model.LastName,
-                Address = "Head office assignment",
+                Address = string.IsNullOrWhiteSpace(model.Address) ? "Head office assignment" : model.Address,
                 Contact_No = model.ContactNo,
                 Email_Id = model.Email,
-                Gender = "Other",
+                Gender = string.IsNullOrWhiteSpace(model.Gender) ? "Other" : model.Gender,
                 Area_Id_fk = model.AreaId,
                 Login_Id_fk = login.Login_Id
             });
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"{model.RoleName} created. Mail simulation prepared with username and password.";
+            TempData["Success"] = $"{model.RoleName} created. Mail simulation: username {model.Email}, password {generatedPassword}.";
             return RedirectToAction(nameof(ManageEventManagers));
         }
 

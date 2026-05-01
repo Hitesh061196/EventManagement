@@ -11,14 +11,15 @@
         </div>
     </div>
 
-    <form asp-action="ManageServices" method="post" class="row g-3 mb-5">
+    <form asp-action="ManageServices" method="post" enctype="multipart/form-data" class="row g-3 mb-5">
         @Html.AntiForgeryToken()
         <div class="col-md-6">
-            <label asp-for="ServiceName" class="form-label"></label>
+            <label asp-for="ServiceName" class="form-label">Event Name</label>
             <input asp-for="ServiceName" class="form-control" />
+            <span asp-validation-for="ServiceName" class="text-danger small"></span>
         </div>
         <div class="col-md-3">
-            <label asp-for="ServiceCategory" class="form-label"></label>
+            <label asp-for="ServiceCategory" class="form-label">Category</label>
             <select asp-for="ServiceCategory" class="form-select">
                 <option>Party Plot</option>
                 <option>Caterer</option>
@@ -37,16 +38,27 @@
             </select>
         </div>
         <div class="col-md-3">
-            <label asp-for="Price" class="form-label"></label>
+            <label asp-for="Price" class="form-label">Price</label>
             <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger small"></span>
         </div>
-        <div class="col-md-9">
-            <label asp-for="PhotoUrl" class="form-label"></label>
-            <input asp-for="PhotoUrl" class="form-control" />
+        <div class="col-md-3">
+            <label asp-for="PriceType" class="form-label">Price Type</label>
+            <select asp-for="PriceType" class="form-select">
+                <option value="For All">For All</option>
+                <option value="100 Guest">100 Guest</option>
+                <option value="Per Person">Per Person</option>
+                <option value="Per Hour">Per Hour</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="PhotoFile" class="form-label">Event Photo (Upload)</label>
+            <input asp-for="PhotoFile" type="file" class="form-control" accept="image/*" />
         </div>
         <div class="col-12">
-            <label asp-for="Description" class="form-label"></label>
+            <label asp-for="Description" class="form-label">Description</label>
             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
         </div>
         <div class="col-12">
             <button class="btn btn-brand" type="submit">Add Service</button>
@@ -55,7 +67,7 @@
 
     <div class="table-responsive">
         <table class="table table-modern">
-            <thead><tr><th>Service</th><th>Category</th><th>Price</th><th>Status</th></tr></thead>
+            <thead><tr><th>Event Name</th><th>Category</th><th>Price</th><th>Price Type</th><th>Status</th></tr></thead>
             <tbody>
             @foreach (var service in Model.ExistingServices)
             {
@@ -63,6 +75,7 @@
                     <td>@service.Service_Name</td>
                     <td>@service.Service_Category</td>
                     <td>@service.Price.ToString("C0")</td>
+                    <td>@service.Price_Type</td>
                     <td><span class="status-pill @(service.Is_Active ? "success" : "danger")">@(service.Is_Active ? "Active" : "Inactive")</span></td>
                 </tr>
             }
