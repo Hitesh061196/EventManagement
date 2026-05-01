@@ -23,15 +23,15 @@ namespace EventManagement.Controllers
 
             var model = new AdminDashboardViewModel
             {
-                PendingProviders = await _context.ServiceProviders.CountAsync(s => s.Approval_Status == "Pending"),
-                ActiveProviders = await _context.ServiceProviders.CountAsync(s => s.Approval_Status == "Approved" && !s.Is_Blocked),
-                PendingBookings = await _context.BookingCartDetails.CountAsync(b => !b.Event_Manager_Approved),
-                FeedbackCount = await _context.FeedBackDetails.CountAsync(),
-                InquiryCount = await _context.InquiryDetails.CountAsync(),
+                PendingProviders = await _context.ServiceProviders.CountAsync(s => s.Approval_Status == AppConstants.ApprovalStatus.Pending),
+                ActiveProviders  = await _context.ServiceProviders.CountAsync(s => s.Approval_Status == AppConstants.ApprovalStatus.Approved && !s.Is_Blocked),
+                PendingBookings  = await _context.BookingCartDetails.CountAsync(b => !b.Event_Manager_Approved),
+                FeedbackCount    = await _context.FeedBackDetails.CountAsync(),
+                InquiryCount     = await _context.InquiryDetails.CountAsync(),
                 EventManagerCount = await _context.UserRegistrationDetails
                     .Include(u => u.Login)
                     .ThenInclude(l => l!.Roll)
-                    .CountAsync(u => u.Login != null && (u.Login.Roll!.Roll_Name == "Event Manager" || u.Login.Roll.Roll_Name == "Event Planner"))
+                    .CountAsync(u => u.Login != null && AppConstants.Roles.StaffRoles.Contains(u.Login.Roll!.Roll_Name))
             };
 
             return View(model);
@@ -176,7 +176,7 @@ namespace EventManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddEventType(string eventType)
         {
-            _context.EventTypeMasters.Add(new EventTypeMaster { Event_Type = eventType, Event_Type_Status = "Active" });
+            _context.EventTypeMasters.Add(new EventTypeMaster { Event_Type = eventType, Event_Type_Status = AppConstants.EventTypeStatus.Active });
             await _context.SaveChangesAsync();
             TempData["Success"] = "Event type added successfully.";
             return RedirectToAction(nameof(ManageEventType));
@@ -189,7 +189,9 @@ namespace EventManagement.Controllers
             var eventType = await _context.EventTypeMasters.FindAsync(id);
             if (eventType != null)
             {
-                eventType.Event_Type_Status = eventType.Event_Type_Status == "Active" ? "Inactive" : "Active";
+                eventType.Event_Type_Status = eventType.Event_Type_Status == AppConstants.EventTypeStatus.Active
+                    ? AppConstants.EventTypeStatus.Inactive
+                    : AppConstants.EventTypeStatus.Active;
                 await _context.SaveChangesAsync();
             }
 
@@ -213,9 +215,9 @@ namespace EventManagement.Controllers
 
             var model = new ManageServiceProvidersViewModel
             {
-                PendingProviders = providers.Where(p => p.Approval_Status == "Pending").ToList(),
-                ApprovedProviders = providers.Where(p => p.Approval_Status == "Approved").ToList(),
-                RejectedProviders = providers.Where(p => p.Approval_Status == "Rejected").ToList()
+                PendingProviders  = providers.Where(p => p.Approval_Status == AppConstants.ApprovalStatus.Pending).ToList(),
+                ApprovedProviders = providers.Where(p => p.Approval_Status == AppConstants.ApprovalStatus.Approved).ToList(),
+                RejectedProviders = providers.Where(p => p.Approval_Status == AppConstants.ApprovalStatus.Rejected).ToList()
             };
 
             return View(model);
@@ -228,10 +230,10 @@ namespace EventManagement.Controllers
             var provider = await _context.ServiceProviders.Include(s => s.Login).FirstOrDefaultAsync(s => s.Service_Provider_Id == id);
             if (provider?.Login != null)
             {
-                provider.Approval_Status = "Approved";
-                provider.Is_Blocked = false;
-                provider.Rejection_Reason = string.Empty;
-                provider.Login.Is_Active = true;
+                provider.Approval_Status     = AppConstants.ApprovalStatus.Approved;
+                provider.Is_Blocked          = false;
+                provider.Rejection_Reason    = string.Empty;
+                provider.Login.Is_Active     = true;
                 provider.Login.Must_Change_Password = true;
                 provider.Login.Last_Notification = $"Approval mail sent to {provider.Email_Id}: username {provider.Email_Id}, password {provider.Login.Password}";
                 await _context.SaveChangesAsync();
@@ -248,9 +250,9 @@ namespace EventManagement.Controllers
             var provider = await _context.ServiceProviders.Include(s => s.Login).FirstOrDefaultAsync(s => s.Service_Provider_Id == id);
             if (provider?.Login != null)
             {
-                provider.Approval_Status = "Rejected";
+                provider.Approval_Status  = AppConstants.ApprovalStatus.Rejected;
                 provider.Rejection_Reason = string.IsNullOrWhiteSpace(reason) ? "Does not match current onboarding requirements." : reason;
-                provider.Login.Is_Active = false;
+                provider.Login.Is_Active  = false;
                 provider.Login.Last_Notification = $"Provider rejected: {provider.Rejection_Reason}";
                 await _context.SaveChangesAsync();
                 TempData["Error"] = "Service person rejected.";
@@ -266,8 +268,8 @@ namespace EventManagement.Controllers
             var provider = await _context.ServiceProviders.Include(s => s.Login).FirstOrDefaultAsync(s => s.Service_Provider_Id == id);
             if (provider?.Login != null)
             {
-                provider.Is_Blocked = !provider.Is_Blocked;
-                provider.Login.Is_Active = !provider.Is_Blocked && provider.Approval_Status == "Approved";
+                provider.Is_Blocked      = !provider.Is_Blocked;
+                provider.Login.Is_Active = !provider.Is_Blocked && provider.Approval_Status == AppConstants.ApprovalStatus.Approved;
                 await _context.SaveChangesAsync();
                 TempData["Success"] = provider.Is_Blocked ? "Provider blocked successfully." : "Provider unblocked successfully.";
             }
@@ -285,7 +287,7 @@ namespace EventManagement.Controllers
             var model = new CreateEventManagerViewModel
             {
                 States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync(),
-                Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync(),
+                Areas  = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync(),
                 AvailableRoles = await _context.RollDetails
                     .Where(r => AppConstants.Roles.StaffRoles.Contains(r.Roll_Name))
                     .OrderBy(r => r.Roll_Name)
@@ -307,7 +309,7 @@ namespace EventManagement.Controllers
             if (!ModelState.IsValid)
             {
                 model.States = await _context.StateMasters.Where(s => s.State_Status).OrderBy(s => s.State_Name).ToListAsync();
-                model.Areas = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync();
+                model.Areas  = await _context.AreaMasters.Include(a => a.City).ThenInclude(c => c!.State).OrderBy(a => a.Area_Name).ToListAsync();
                 model.AvailableRoles = await _context.RollDetails
                     .Where(r => AppConstants.Roles.StaffRoles.Contains(r.Roll_Name))
                     .OrderBy(r => r.Roll_Name).ToListAsync();
@@ -326,26 +328,26 @@ namespace EventManagement.Controllers
 
             var login = new LoginDetail
             {
-                User_Name = model.Email,
-                Password = generatedPassword,
-                Roll_Id_fk = roleId,
-                Is_Active = true,
+                User_Name            = model.Email,
+                Password             = generatedPassword,
+                Roll_Id_fk           = roleId,
+                Is_Active            = true,
                 Must_Change_Password = true,
-                Last_Notification = $"Credentials sent to {model.Email}: username {model.Email}, password {generatedPassword}"
+                Last_Notification    = $"Credentials sent to {model.Email}: username {model.Email}, password {generatedPassword}"
             };
             _context.LoginDetails.Add(login);
             await _context.SaveChangesAsync();
 
             _context.UserRegistrationDetails.Add(new UserRegistrationDetail
             {
-                First_Name = model.FirstName,
+                First_Name  = model.FirstName,
                 Middle_Name = model.MiddleName,
-                Last_Name = model.LastName,
-                Address = string.IsNullOrWhiteSpace(model.Address) ? "Head office assignment" : model.Address,
-                Contact_No = model.ContactNo,
-                Email_Id = model.Email,
-                Gender = string.IsNullOrWhiteSpace(model.Gender) ? "Other" : model.Gender,
-                Area_Id_fk = model.AreaId,
+                Last_Name   = model.LastName,
+                Address     = string.IsNullOrWhiteSpace(model.Address) ? "Head office assignment" : model.Address,
+                Contact_No  = model.ContactNo,
+                Email_Id    = model.Email,
+                Gender      = string.IsNullOrWhiteSpace(model.Gender) ? "Other" : model.Gender,
+                Area_Id_fk  = model.AreaId,
                 Login_Id_fk = login.Login_Id
             });
             await _context.SaveChangesAsync();
@@ -381,7 +383,7 @@ namespace EventManagement.Controllers
             var inquiry = await _context.InquiryDetails.FindAsync(id);
             if (inquiry != null)
             {
-                inquiry.Response = response;
+                inquiry.Response      = response;
                 inquiry.Response_Date = DateTime.Now;
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Response sent through mail simulation.";
@@ -392,8 +394,7 @@ namespace EventManagement.Controllers
 
         private bool IsAdmin()
         {
-            return HttpContext.Session.GetString("Role") == "Admin";
+            return HttpContext.Session.GetString("Role") == AppConstants.Roles.Admin;
         }
     }
 }
-

@@ -56,7 +56,12 @@ namespace EventManagement.Controllers
                 .Select(g => g.First())
                 .ToList();
 
-            var stages = AppConstants.WorkStages;
+            // Load work stages from database
+            var stages = await _context.WorkStageMasters
+                .Where(w => w.Is_Active)
+                .OrderBy(w => w.Stage_Order)
+                .Select(w => w.Stage_Name)
+                .ToListAsync();
 
             var orderStages = new Dictionary<int, string>();
             foreach (var order in orders)
@@ -75,7 +80,7 @@ namespace EventManagement.Controllers
                     else
                     {
                         var lastStage = lastStatus.Description?.Split(':').FirstOrDefault()?.Trim() ?? string.Empty;
-                        var idx = stages.ToList().IndexOf(lastStage);
+                        var idx = stages.IndexOf(lastStage);
                         orderStages[order.Booking_Service_Detail_Id] = idx >= 0 && idx < stages.Count - 1
                             ? stages[idx + 1]
                             : stages[stages.Count - 1];
@@ -103,7 +108,7 @@ namespace EventManagement.Controllers
 
             if (order != null)
             {
-                order.Confirmation_Status = "Confirmed";
+                order.Confirmation_Status = AppConstants.ConfirmationStatus.Confirmed;
                 order.Provider_Comment = providerComment;
                 order.Confirmed_On = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
@@ -121,14 +126,28 @@ namespace EventManagement.Controllers
             }
 
             var provider = await GetProviderAsync();
+
+            // Load price types from database
+            var priceTypes = await _context.PriceTypeMasters
+                .Where(p => p.Is_Active)
+                .OrderBy(p => p.Sort_Order)
+                .Select(p => p.Price_Type_Name)
+                .ToListAsync();
+
             var model = new ManageServicesViewModel
             {
-                EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active).OrderBy(e => e.Event_Type).ToListAsync(),
+                EventTypes = await _context.EventTypeMasters
+                    .Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active)
+                    .OrderBy(e => e.Event_Type)
+                    .ToListAsync(),
                 ExistingServices = provider == null
                     ? Array.Empty<ServiceCatalogItem>()
-                    : await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync(),
+                    : await _context.ServiceCatalogItems
+                        .Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id)
+                        .OrderBy(s => s.Service_Name)
+                        .ToListAsync(),
                 ProviderCategory = provider?.Service_Provider_Type ?? string.Empty,
-                PriceTypes = AppConstants.PriceTypes
+                PriceTypes = priceTypes
             };
             return View(model);
         }
@@ -150,12 +169,25 @@ namespace EventManagement.Controllers
 
             ModelState.Remove(nameof(model.PhotoUrl));
 
+            // Load price types from database for re-display on validation failure
+            var priceTypes = await _context.PriceTypeMasters
+                .Where(p => p.Is_Active)
+                .OrderBy(p => p.Sort_Order)
+                .Select(p => p.Price_Type_Name)
+                .ToListAsync();
+
             if (!ModelState.IsValid)
             {
-                model.EventTypes = await _context.EventTypeMasters.Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active).OrderBy(e => e.Event_Type).ToListAsync();
-                model.ExistingServices = await _context.ServiceCatalogItems.Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id).OrderBy(s => s.Service_Name).ToListAsync();
+                model.EventTypes = await _context.EventTypeMasters
+                    .Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active)
+                    .OrderBy(e => e.Event_Type)
+                    .ToListAsync();
+                model.ExistingServices = await _context.ServiceCatalogItems
+                    .Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id)
+                    .OrderBy(s => s.Service_Name)
+                    .ToListAsync();
                 model.ProviderCategory = provider.Service_Provider_Type;
-                model.PriceTypes = AppConstants.PriceTypes;
+                model.PriceTypes = priceTypes;
                 return View(model);
             }
 
@@ -173,15 +205,15 @@ namespace EventManagement.Controllers
 
             _context.ServiceCatalogItems.Add(new ServiceCatalogItem
             {
-                Service_Name = model.ServiceName,
-                Service_Category = model.ServiceCategory,
-                Event_Type_Id_fk = model.EventTypeId,
+                Service_Name           = model.ServiceName,
+                Service_Category       = model.ServiceCategory,
+                Event_Type_Id_fk       = model.EventTypeId,
                 Service_Provider_Id_fk = provider.Service_Provider_Id,
-                Price = model.Price,
-                Price_Type = model.PriceType,
-                Photo_Url = photoUrl ?? string.Empty,
-                Description = model.Description,
-                Is_Active = true
+                Price                  = model.Price,
+                Price_Type             = model.PriceType,
+                Photo_Url              = photoUrl ?? string.Empty,
+                Description            = model.Description,
+                Is_Active              = true
             });
             await _context.SaveChangesAsync();
             TempData["Success"] = "Service person manage on services completed.";
@@ -215,14 +247,14 @@ namespace EventManagement.Controllers
 
             _context.EventStatusMasters.Add(new EventStatusMaster
             {
-                Service_Person_Id_fk = int.Parse(HttpContext.Session.GetString("UserId") ?? "0"),
+                Service_Person_Id_fk  = int.Parse(HttpContext.Session.GetString("UserId") ?? "0"),
                 Event_Booking_Cart_fk = bookingService.Booking_Id_fk,
-                Event_Type_Id_fk = bookingService.ServiceCatalogItem.Event_Type_Id_fk,
-                Status = status,
-                Date = DateTime.UtcNow,
-                Description = $"{stage}: {description}",
-                Photo = photoPath,
-                Event_Type = bookingService.Service_Category
+                Event_Type_Id_fk      = bookingService.ServiceCatalogItem.Event_Type_Id_fk,
+                Status                = status,
+                Date                  = DateTime.UtcNow,
+                Description           = $"{stage}: {description}",
+                Photo                 = photoPath,
+                Event_Type            = bookingService.Service_Category
             });
             await _context.SaveChangesAsync();
             TempData["Success"] = "The working condition status has been updated.";
@@ -231,7 +263,7 @@ namespace EventManagement.Controllers
 
         private bool IsProvider()
         {
-            return HttpContext.Session.GetString("Role") == "Service Provider";
+            return HttpContext.Session.GetString("Role") == AppConstants.Roles.ServiceProvider;
         }
 
         private async Task<EventManagement.Models.ServiceProvider?> GetProviderAsync()
@@ -243,4 +275,3 @@ namespace EventManagement.Controllers
         }
     }
 }
-

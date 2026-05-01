@@ -26,6 +26,8 @@ namespace EventManagement.Models
         public DbSet<FeedBackDetail> FeedBackDetails { get; set; }
         public DbSet<EventTimeMaster> EventTimeMasters { get; set; }
         public DbSet<ServiceProviderTypeMaster> ServiceProviderTypeMasters { get; set; }
+        public DbSet<PriceTypeMaster> PriceTypeMasters { get; set; }
+        public DbSet<WorkStageMaster> WorkStageMasters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

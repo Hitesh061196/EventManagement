@@ -17,7 +17,7 @@ namespace EventManagement.Controllers
         public async Task<IActionResult> Index()
         {
             var role = HttpContext.Session.GetString("Role");
-            if (role != "Event Manager" && role != "Event Planner")
+            if (!AppConstants.Roles.StaffRoles.Contains(role))
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -32,7 +32,7 @@ namespace EventManagement.Controllers
 
             var model = new EventManagerDashboardViewModel
             {
-                Bookings = bookings,
+                Bookings        = bookings,
                 BookingServices = bookings.SelectMany(b => b.Services).ToList()
             };
 
@@ -43,7 +43,7 @@ namespace EventManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmOrder(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Event Manager")
+            if (HttpContext.Session.GetString("Role") != AppConstants.Roles.EventManager)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -51,9 +51,9 @@ namespace EventManagement.Controllers
             var booking = await _context.BookingCartDetails.FindAsync(id);
             if (booking != null)
             {
-                booking.Event_Manager_Approved = true;
+                booking.Event_Manager_Approved    = true;
                 booking.Event_Manager_Login_Id_fk = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
-                booking.Booking_Status = "Confirmed by Event Manager";
+                booking.Booking_Status            = AppConstants.BookingStatus.ConfirmedByManager;
                 await _context.SaveChangesAsync();
                 TempData["Success"] = $"Event manager confirm order completed for {booking.Booking_Reference}.";
             }
@@ -62,4 +62,3 @@ namespace EventManagement.Controllers
         }
     }
 }
-

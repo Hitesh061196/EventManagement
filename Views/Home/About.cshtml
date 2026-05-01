@@ -1,32 +1,714 @@
+@using EventManagement.Models
 @{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "About Us";
+    int eventTypeCount   = ViewBag.EventTypeCount   ?? 0;
+    int providerCount    = ViewBag.ProviderCount     ?? 0;
+    int serviceCount     = ViewBag.ServiceCount      ?? 0;
+    int bookingCount     = ViewBag.BookingCount      ?? 0;
+    var activeEventTypes = ViewBag.ActiveEventTypes  as List<EventTypeMaster>            ?? new();
+    var serviceTypes     = ViewBag.ServiceTypes      as List<ServiceProviderTypeMaster>  ?? new();
 }
 
-<section class="surface-card p-4 p-lg-5">
-    <div class="page-title-row">
-        <div>
-            <h1 class="section-title">Visitor About Us Page</h1>
-            <p class="section-copy">This project showcases a complete event management process across visitor inquiry, customer booking, provider execution, event-manager approval, and admin control.</p>
+<!-- ═══════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════ -->
+<section class="about-hero mb-5">
+    <div class="about-hero-content">
+        <div class="about-hero-badge">
+            <i class="bi bi-stars me-2"></i>About E-Zone It
+        </div>
+        <h1 class="about-hero-title">Making Every Event<br><span class="about-hero-accent">Truly Unforgettable</span></h1>
+        <p class="about-hero-sub">
+            E-Zone It is a full-service online event management platform connecting customers, service providers,
+            event managers, and administrators — all under one roof. From the first inquiry to the final applause,
+            we manage every detail so you can focus on the moments that matter.
+        </p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center mt-4">
+            <a class="btn btn-brand btn-lg px-4" asp-controller="Account" asp-action="Register">
+                <i class="bi bi-person-plus-fill me-2"></i>Get Started
+            </a>
+            <a class="btn about-hero-outline btn-lg px-4" asp-controller="Home" asp-action="Contact">
+                <i class="bi bi-chat-dots me-2"></i>Talk to Us
+            </a>
         </div>
     </div>
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="metric-card p-4 h-100">
-                <h5 class="fw-bold">Visitor</h5>
-                <p class="text-secondary mb-0">Browse event types, learn about the platform, and submit inquiries before registration.</p>
-            </div>
+
+    <!-- Live stats bar -->
+    <div class="about-stats-bar">
+        <div class="about-stat-item">
+            <div class="about-stat-num">@bookingCount<span class="about-stat-plus">+</span></div>
+            <div class="about-stat-label">Events Booked</div>
         </div>
-        <div class="col-lg-4">
-            <div class="metric-card p-4 h-100">
-                <h5 class="fw-bold">Customer</h5>
-                <p class="text-secondary mb-0">Register, login, select services step by step, pay, track event status, and submit feedback.</p>
-            </div>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat-item">
+            <div class="about-stat-num">@providerCount<span class="about-stat-plus">+</span></div>
+            <div class="about-stat-label">Service Providers</div>
         </div>
-        <div class="col-lg-4">
-            <div class="metric-card p-4 h-100">
-                <h5 class="fw-bold">Operations</h5>
-                <p class="text-secondary mb-0">Service providers manage orders and statuses, event managers confirm orders, and admin oversees the full system.</p>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat-item">
+            <div class="about-stat-num">@serviceCount<span class="about-stat-plus">+</span></div>
+            <div class="about-stat-label">Services Available</div>
+        </div>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat-item">
+            <div class="about-stat-num">@eventTypeCount<span class="about-stat-plus">+</span></div>
+            <div class="about-stat-label">Event Categories</div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     OUR STORY
+════════════════════════════════════════════════════ -->
+<section class="row g-5 align-items-center mb-5">
+    <div class="col-lg-6">
+        <div class="about-section-tag">Our Story</div>
+        <h2 class="about-section-title">Born from a Simple Belief — <em>Great Events Deserve Great Planning</em></h2>
+        <p class="text-muted mb-4">
+            Planning an event used to mean juggling phone calls, spreadsheets, and last-minute surprises.
+            E-Zone It was built to change that. We created a single, seamless platform where every party involved —
+            from the customer choosing a venue to the service person confirming an order — works together in real time.
+        </p>
+        <p class="text-muted mb-4">
+            Today we serve weddings, birthdays, corporate gatherings, and reception parties across Gujarat and Maharashtra,
+            with a network of approved caterers, decorators, musicians, transporters, and venue providers all onboarded
+            through our transparent approval process.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+            <div class="about-value-chip"><i class="bi bi-shield-check-fill me-2 text-success"></i>Verified Providers Only</div>
+            <div class="about-value-chip"><i class="bi bi-eye-fill me-2" style="color:#3b82f6;"></i>Full Transparency</div>
+            <div class="about-value-chip"><i class="bi bi-headset me-2" style="color:#f97316;"></i>Dedicated Support</div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="about-story-visual">
+            <div class="about-story-card about-story-card--top">
+                <i class="bi bi-calendar2-check-fill" style="color:#f97316; font-size:1.6rem;"></i>
+                <div>
+                    <div class="fw-bold">End-to-End Booking</div>
+                    <div class="small text-muted">From selection to payment — one platform</div>
+                </div>
+            </div>
+            <div class="about-story-card about-story-card--mid">
+                <i class="bi bi-people-fill" style="color:#3b82f6; font-size:1.6rem;"></i>
+                <div>
+                    <div class="fw-bold">5-Role Ecosystem</div>
+                    <div class="small text-muted">Visitor, Customer, Provider, Manager, Admin</div>
+                </div>
+            </div>
+            <div class="about-story-card about-story-card--bot">
+                <i class="bi bi-graph-up-arrow" style="color:#10b981; font-size:1.6rem;"></i>
+                <div>
+                    <div class="fw-bold">Live Status Tracking</div>
+                    <div class="small text-muted">6-stage workflow visible to customer</div>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════ -->
+<section class="mb-5">
+    <div class="text-center mb-5">
+        <div class="about-section-tag mx-auto">How It Works</div>
+        <h2 class="about-section-title">Your Event in 5 Simple Steps</h2>
+        <p class="section-copy mx-auto text-center">Every role plays a part in delivering a flawless event experience.</p>
+    </div>
+
+    <div class="about-steps">
+
+        <div class="about-step">
+            <div class="about-step-num">01</div>
+            <div class="about-step-icon" style="background:linear-gradient(135deg,#f97316,#ef4444);">
+                <i class="bi bi-search"></i>
+            </div>
+            <div class="about-step-body">
+                <h5 class="fw-bold mb-1">Discover &amp; Inquire</h5>
+                <p class="text-muted small mb-0">
+                    Visitors browse event types and services, then submit an inquiry. The admin reviews and responds, guiding them toward registration.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-step-connector"><i class="bi bi-arrow-right"></i></div>
+
+        <div class="about-step">
+            <div class="about-step-num">02</div>
+            <div class="about-step-icon" style="background:linear-gradient(135deg,#3b82f6,#6366f1);">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="about-step-body">
+                <h5 class="fw-bold mb-1">Register &amp; Book</h5>
+                <p class="text-muted small mb-0">
+                    Customers register, log in, choose an event type, date, guest count, and select services — Party Plot, Caterer, Decoration, Music, and Transporter.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-step-connector"><i class="bi bi-arrow-right"></i></div>
+
+        <div class="about-step">
+            <div class="about-step-num">03</div>
+            <div class="about-step-icon" style="background:linear-gradient(135deg,#10b981,#059669);">
+                <i class="bi bi-clipboard2-check-fill"></i>
+            </div>
+            <div class="about-step-body">
+                <h5 class="fw-bold mb-1">Manager Approves</h5>
+                <p class="text-muted small mb-0">
+                    The Event Manager reviews the booking, confirms it, and notifies each assigned service provider. The customer can then proceed to payment.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-step-connector"><i class="bi bi-arrow-right"></i></div>
+
+        <div class="about-step">
+            <div class="about-step-num">04</div>
+            <div class="about-step-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <i class="bi bi-tools"></i>
+            </div>
+            <div class="about-step-body">
+                <h5 class="fw-bold mb-1">Providers Execute</h5>
+                <p class="text-muted small mb-0">
+                    Each service provider progresses through the 6-stage workflow — Confirm → Collect Material → Reached → Work Start → Work Running → Work Finish.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-step-connector"><i class="bi bi-arrow-right"></i></div>
+
+        <div class="about-step">
+            <div class="about-step-num">05</div>
+            <div class="about-step-icon" style="background:linear-gradient(135deg,#ec4899,#be185d);">
+                <i class="bi bi-star-fill"></i>
+            </div>
+            <div class="about-step-body">
+                <h5 class="fw-bold mb-1">Pay &amp; Review</h5>
+                <p class="text-muted small mb-0">
+                    After the event, the customer completes payment and submits feedback. The admin monitors quality and manages all accounts from the dashboard.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     OUR SERVICES
+════════════════════════════════════════════════════ -->
+<section class="mb-5">
+    <div class="text-center mb-5">
+        <div class="about-section-tag mx-auto">Our Services</div>
+        <h2 class="about-section-title">Everything Your Event Needs</h2>
+        <p class="section-copy mx-auto text-center">
+            We bring together @serviceCount+ verified services across @serviceTypes.Count categories — all bookable from a single dashboard.
+        </p>
+    </div>
+
+    @{
+        var serviceIcons = new Dictionary<string, (string icon, string gradient, string desc)>
+        {
+            ["Party Plot"]  = ("bi-building-fill",      "linear-gradient(135deg,#f97316,#ef4444)", "Elegant venues, open lawns, and banquet halls sized for every gathering."),
+            ["Caterer"]     = ("bi-egg-fried",           "linear-gradient(135deg,#3b82f6,#6366f1)", "Multi-cuisine menus, live counters, and buffet setups crafted for your guests."),
+            ["Decoration"]  = ("bi-flower2",             "linear-gradient(135deg,#ec4899,#be185d)", "Floral arrangements, stage backdrops, and themed décor that transforms any space."),
+            ["Music"]       = ("bi-music-note-beamed",   "linear-gradient(135deg,#f59e0b,#d97706)", "DJ setups, live bands, dhol performers, and complete sound systems."),
+            ["Transporter"] = ("bi-truck-front-fill",    "linear-gradient(135deg,#10b981,#059669)", "Guest shuttles, VIP sedans, and fleet coordination for seamless arrivals.")
+        };
+    }
+
+    <div class="row g-4">
+        @foreach (var st in serviceTypes)
+        {
+            if (!serviceIcons.TryGetValue(st.Type_Name, out var info))
+            {
+                info = ("bi-grid-fill", "linear-gradient(135deg,#6366f1,#4338ca)", "Professional service tailored to your event needs.");
+            }
+            var svcIcon     = info.Item1;
+            var svcGradient = info.Item2;
+            var svcDesc     = info.Item3;
+
+            <div class="col-md-6 col-xl-4">
+                <div class="about-service-card h-100">
+                    <div class="about-service-icon" style="background:@svcGradient;">
+                        <i class="bi @svcIcon"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3 mb-2">@st.Type_Name</h5>
+                    <p class="text-muted small mb-0">@svcDesc</p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     WHY CHOOSE US
+════════════════════════════════════════════════════ -->
+<section class="mb-5">
+    <div class="text-center mb-5">
+        <div class="about-section-tag mx-auto">Why E-Zone It</div>
+        <h2 class="about-section-title">What Sets Us Apart</h2>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#fff7ed; color:#ea580c;">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Verified Service Providers</h6>
+                <p class="text-muted small mb-0">Every vendor goes through an admin approval process before they can list services. No unverified profiles, ever.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#eff6ff; color:#2563eb;">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Location-Based Matching</h6>
+                <p class="text-muted small mb-0">Services are matched by state, city, and area — ensuring providers are local to your event venue.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#f0fdf4; color:#16a34a;">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Real-Time Status Tracking</h6>
+                <p class="text-muted small mb-0">Watch your event come together live. Each provider updates their 6-stage progress so you always know what's happening.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#fdf4ff; color:#9333ea;">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Transparent Pricing</h6>
+                <p class="text-muted small mb-0">Every service shows its price and billing type — Per Event, Per Plate, Per Trip — before you commit. No hidden charges.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#fff1f2; color:#e11d48;">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Dedicated Event Manager</h6>
+                <p class="text-muted small mb-0">A dedicated event manager reviews every booking, coordinates with all providers, and ensures smooth execution on the day.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="about-why-card h-100">
+                <div class="about-why-icon" style="background:#fefce8; color:#ca8a04;">
+                    <i class="bi bi-chat-heart-fill"></i>
+                </div>
+                <h6 class="fw-bold mt-3 mb-2">Post-Event Feedback Loop</h6>
+                <p class="text-muted small mb-0">After the event, customers submit feedback that helps us continuously improve the quality of services on the platform.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     EVENT TYPES WE COVER
+════════════════════════════════════════════════════ -->
+@if (activeEventTypes.Any())
+{
+    <section class="mb-5">
+        <div class="text-center mb-5">
+            <div class="about-section-tag mx-auto">Events We Cover</div>
+            <h2 class="about-section-title">What Are You Celebrating?</h2>
+        </div>
+
+        @{
+            var eventImages = new Dictionary<string, string>
+            {
+                ["Wedding"]   = "https://images.unsplash.com/photo-1738225734899-30852be7e396?w=900",
+                ["Birthday"]  = "https://images.unsplash.com/photo-1602631985686-1bb0e6a8696e?w=900",
+                ["Corporate"] = "https://images.unsplash.com/photo-1561489396-888724a1543d?w=900",
+                ["Reception"] = "https://images.unsplash.com/photo-1761114905078-163aa92141c8?w=900"
+            };
+        }
+
+        <div class="row g-4">
+            @foreach (var et in activeEventTypes)
+            {
+                var img = eventImages.TryGetValue(et.Event_Type, out var u)
+                    ? u
+                    : "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900";
+
+                <div class="col-md-6 col-xl-3">
+                    <div class="about-event-card">
+                        <img src="@img" alt="@et.Event_Type" class="about-event-img" />
+                        <div class="about-event-overlay">
+                            <span class="about-event-name">@et.Event_Type</span>
+                            <a class="btn btn-brand btn-sm mt-2" asp-controller="Account" asp-action="Register">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+<!-- ═══════════════════════════════════════════════════
+     CTA BANNER
+════════════════════════════════════════════════════ -->
+<section class="about-cta">
+    <div class="about-cta-inner text-center">
+        <h2 class="about-cta-title">Ready to Plan Your Perfect Event?</h2>
+        <p class="about-cta-sub">
+            Join hundreds of customers who trust E-Zone It for weddings, birthdays, corporate events, and more.
+            Registration is free and takes less than 2 minutes.
+        </p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center mt-4">
+            <a class="btn btn-brand btn-lg px-5" asp-controller="Account" asp-action="Register">
+                <i class="bi bi-person-plus-fill me-2"></i>Register as Customer
+            </a>
+            <a class="btn about-cta-outline btn-lg px-5" asp-controller="Account" asp-action="ServiceProviderRegister">
+                <i class="bi bi-shop me-2"></i>Join as Service Provider
+            </a>
+            <a class="btn about-cta-outline btn-lg px-4" asp-controller="Home" asp-action="Contact">
+                <i class="bi bi-envelope me-2"></i>Contact Us
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* ── Hero ──────────────────────────────────────────── */
+    .about-hero {
+        border-radius: 1.75rem;
+        overflow: hidden;
+        background: linear-gradient(150deg, rgba(15,23,42,0.97) 0%, rgba(22,33,61,0.93) 60%, rgba(30,41,59,0.90) 100%);
+        padding: 4rem 2rem 0;
+        text-align: center;
+        color: #fff;
+        position: relative;
+    }
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse at 20% 20%, rgba(249,115,22,0.22) 0%, transparent 55%),
+            radial-gradient(ellipse at 80% 80%, rgba(59,130,246,0.18) 0%, transparent 55%);
+        pointer-events: none;
+    }
+    .about-hero-content { position: relative; z-index: 1; }
+    .about-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 1.1rem;
+        border-radius: 999px;
+        background: rgba(249,115,22,0.15);
+        border: 1px solid rgba(249,115,22,0.3);
+        color: #fb923c;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+    }
+    .about-hero-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        line-height: 1.18;
+        margin-bottom: 1.2rem;
+    }
+    .about-hero-accent {
+        background: linear-gradient(90deg, #f97316, #f43f5e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .about-hero-sub {
+        color: rgba(255,255,255,0.68);
+        max-width: 46rem;
+        margin: 0 auto;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+    .about-hero-outline {
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.35);
+        color: #fff;
+    }
+    .about-hero-outline:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* Stats bar */
+    .about-stats-bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0;
+        margin-top: 3rem;
+        padding: 1.8rem 2rem;
+        background: rgba(255,255,255,0.05);
+        border-top: 1px solid rgba(255,255,255,0.08);
+        position: relative;
+        z-index: 1;
+    }
+    .about-stat-item { text-align: center; padding: 0 2.5rem; }
+    .about-stat-num {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+    }
+    .about-stat-plus { font-size: 1.4rem; color: #f97316; }
+    .about-stat-label {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.55);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 0.35rem;
+    }
+    .about-stat-divider {
+        width: 1px;
+        height: 2.5rem;
+        background: rgba(255,255,255,0.12);
+    }
+
+    /* ── Section headings ──────────────────────────────── */
+    .about-section-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(249,115,22,0.1);
+        border: 1px solid rgba(249,115,22,0.25);
+        color: #ea580c;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .about-section-title {
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.25;
+        margin-bottom: 0.75rem;
+    }
+
+    /* ── Story visual ─────────────────────────────────── */
+    .about-story-visual {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        position: relative;
+    }
+    .about-story-card {
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+        padding: 1.3rem 1.5rem;
+        border-radius: 1.2rem;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid rgba(148,163,184,0.2);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 30px rgba(15,23,42,0.07);
+    }
+    .about-story-card--mid { margin-left: 1.5rem; }
+    .about-story-card--bot { margin-left: 3rem; }
+    .about-value-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(248,250,252,0.9);
+        border: 1px solid rgba(148,163,184,0.25);
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    /* ── How it works steps ───────────────────────────── */
+    .about-steps {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        flex-wrap: wrap;
+    }
+    .about-step {
+        flex: 1;
+        min-width: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 1rem;
+        border-radius: 1.25rem;
+        background: rgba(255,255,255,0.75);
+        border: 1px solid rgba(148,163,184,0.18);
+        backdrop-filter: blur(8px);
+        position: relative;
+    }
+    .about-step-num {
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        color: rgba(100,116,139,0.5);
+        margin-bottom: 0.9rem;
+    }
+    .about-step-icon {
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 1rem;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .about-step-body h5 { font-size: 0.92rem; }
+    .about-step-connector {
+        display: flex;
+        align-items: center;
+        padding: 0 0.25rem;
+        color: rgba(100,116,139,0.4);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* ── Service cards ────────────────────────────────── */
+    .about-service-card {
+        padding: 1.8rem;
+        border-radius: 1.25rem;
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(148,163,184,0.18);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .about-service-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(15,23,42,0.1);
+    }
+    .about-service-icon {
+        width: 3.4rem;
+        height: 3.4rem;
+        border-radius: 1.1rem;
+        display: grid;
+        place-items: center;
+        font-size: 1.4rem;
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    }
+
+    /* ── Why choose us cards ──────────────────────────── */
+    .about-why-card {
+        padding: 1.6rem;
+        border-radius: 1.25rem;
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(148,163,184,0.18);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 6px 20px rgba(15,23,42,0.05);
+    }
+    .about-why-icon {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 0.85rem;
+        display: grid;
+        place-items: center;
+        font-size: 1.15rem;
+    }
+
+    /* ── Event cards ──────────────────────────────────── */
+    .about-event-card {
+        position: relative;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.1);
+    }
+    .about-event-img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s;
+    }
+    .about-event-card:hover .about-event-img { transform: scale(1.05); }
+    .about-event-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(15,23,42,0.85) 0%, transparent 55%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .about-event-name {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.02em;
+    }
+
+    /* ── CTA ──────────────────────────────────────────── */
+    .about-cta {
+        border-radius: 1.75rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,41,59,0.90)),
+                    linear-gradient(135deg, rgba(249,115,22,0.2), rgba(59,130,246,0.15));
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #fff;
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .about-cta::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(249,115,22,0.15), transparent 50%);
+        pointer-events: none;
+    }
+    .about-cta-inner { position: relative; z-index: 1; }
+    .about-cta-title {
+        font-size: clamp(1.6rem, 3vw, 2.4rem);
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+    .about-cta-sub {
+        color: rgba(255,255,255,0.65);
+        max-width: 40rem;
+        margin: 0 auto;
+        font-size: 0.98rem;
+        line-height: 1.65;
+    }
+    .about-cta-outline {
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.3);
+        color: #fff;
+    }
+    .about-cta-outline:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @@media (max-width: 991.98px) {
+        .about-steps { gap: 1rem; }
+        .about-step-connector { display: none; }
+        .about-story-card--mid, .about-story-card--bot { margin-left: 0; }
+        .about-stat-item { padding: 0 1.2rem; }
+        .about-stat-divider { height: 2rem; }
+    }
+    @@media (max-width: 575.98px) {
+        .about-hero { padding: 2.5rem 1.25rem 0; }
+        .about-stats-bar { flex-direction: column; gap: 1.2rem; padding: 1.5rem; }
+        .about-stat-divider { display: none; }
+        .about-cta { padding: 2.5rem 1.25rem; }
+    }
+</style>

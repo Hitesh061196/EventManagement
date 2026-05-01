@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EventManagement.Models;
-using EventManagement.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,21 +12,6 @@ builder.Services.AddDbContext<EventManagementDbContext>(options =>
         .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<EventManagementDbContext>();
-    var logger    = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    try
-    {
-        await EventManagementSeeder.SeedAsync(dbContext);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Database seeding failed: {Message}", ex.Message);
-        throw;
-    }
-}
 
 if (!app.Environment.IsDevelopment())
 {

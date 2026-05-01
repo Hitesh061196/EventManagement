@@ -7,20 +7,19 @@
 <section class="hero-card p-4 p-lg-5 mb-5">
     <div class="row align-items-center g-4">
         <div class="col-lg-7">
-            <span class="badge rounded-pill text-bg-light mb-3">Visitor Home Page</span>
-            <h1 class="display-5 fw-bold mb-3">Plan-driven event booking from inquiry to payment and live status tracking.</h1>
-            <p class="lead text-white-50 mb-4">The application follows the provided project flow: visitor inquiry, customer registration, multi-service event booking, service-person order handling, event-manager approval, feedback, and admin monitoring.</p>
+            <h1 class="display-5 fw-bold mb-3">Your perfect event, planned and managed end to end.</h1>
+            <p class="lead text-white-50 mb-4">From inquiry to booking, service coordination, and live status tracking — E-Zone It handles every detail so you can focus on celebrating.</p>
             <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-brand btn-lg" asp-controller="Account" asp-action="Register">Customer Registration</a>
-                <a class="btn btn-outline-light btn-lg" asp-controller="Home" asp-action="Contact">Visitor Inquiry</a>
+                <a class="btn btn-brand btn-lg" asp-controller="Account" asp-action="Register">Book Your Event</a>
+                <a class="btn btn-outline-light btn-lg" asp-controller="Home" asp-action="Contact">Contact Us</a>
             </div>
         </div>
         <div class="col-lg-5">
             <div class="row g-3">
-                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Modules</div><div class="fs-3 fw-bold">5 Roles</div></div></div>
-                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Flow</div><div class="fs-3 fw-bold">End to End</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Event Types</div><div class="fs-3 fw-bold">@(eventTypes.Count > 0 ? eventTypes.Count.ToString() : "5+")</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Services</div><div class="fs-3 fw-bold">All in One</div></div></div>
                 <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Booking</div><div class="fs-3 fw-bold">Multi Service</div></div></div>
-                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Demo Data</div><div class="fs-3 fw-bold">Ready</div></div></div>
+                <div class="col-6"><div class="hero-stat"><div class="small text-white-50">Support</div><div class="fs-3 fw-bold">Dedicated</div></div></div>
             </div>
         </div>
     </div>
@@ -30,7 +29,7 @@
     <div class="page-title-row">
         <div>
             <h2 class="section-title">Event Types</h2>
-            <p class="section-copy">The plan starts with registration, login, and book event. These active event types are ready for booking.</p>
+            <p class="section-copy">Choose from our range of expertly managed event categories — each with curated venues, catering, and services.</p>
         </div>
     </div>
     <div class="row g-4">
@@ -73,8 +72,8 @@
 <section>
     <div class="page-title-row">
         <div>
-            <h2 class="section-title">Featured Service Screens</h2>
-            <p class="section-copy">The plan walks through party plot, caterer, decoration, music, and transporter selection. These seeded services support that exact flow.</p>
+            <h2 class="section-title">Featured Services</h2>
+            <p class="section-copy">Explore our top-rated services — from party plots and catering to decoration, music, and transportation.</p>
         </div>
     </div>
     <div class="row g-4">
@@ -90,7 +89,7 @@
                         </div>
                         <h5 class="fw-bold">@service.Service_Name</h5>
                         <p class="small text-secondary">@service.Description</p>
-                        <div class="small text-secondary">Provider: @(service.ServiceProvider?.Service_Provider_Name ?? "Internal Demo")</div>
+                        <div class="small text-secondary">Provider: @(service.ServiceProvider?.Service_Provider_Name ?? "E-Zone It")</div>
                     </div>
                 </div>
             </div>

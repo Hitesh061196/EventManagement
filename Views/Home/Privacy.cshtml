@@ -1,6 +1,115 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="surface-card p-4 p-lg-5">
+    <div class="page-title-row mb-4">
+        <div>
+            <h1 class="section-title">Privacy Policy</h1>
+            <p class="section-copy">Last updated: May 2025</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">1. Introduction</h5>
+                <p class="text-secondary">E-Zone It ("we", "our", or "us") is committed to protecting your personal information. This Privacy Policy explains what data we collect, how we use it, and what rights you have in relation to it. By using our platform you agree to the practices described in this policy.</p>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">2. Information We Collect</h5>
+                <p class="text-secondary mb-2">We collect information you provide directly when you register, book an event, or contact us:</p>
+                <ul class="text-secondary">
+                    <li><strong>Account details</strong> — name, email address, mobile number, and password (stored as a secure hash).</li>
+                    <li><strong>Address &amp; locality</strong> — state, city, area, and full address used for service coordination.</li>
+                    <li><strong>Booking information</strong> — event type, date, guest count, selected services, and payment status.</li>
+                    <li><strong>Feedback &amp; inquiries</strong> — messages and ratings you submit through the platform.</li>
+                    <li><strong>Usage data</strong> — pages visited and actions taken within the application for improving our service.</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">3. How We Use Your Information</h5>
+                <ul class="text-secondary">
+                    <li>To create and manage your account and bookings.</li>
+                    <li>To coordinate with service providers and event managers on your behalf.</li>
+                    <li>To send booking confirmations, status updates, and account credentials.</li>
+                    <li>To respond to your inquiries and feedback.</li>
+                    <li>To improve platform features and service quality.</li>
+                    <li>To comply with applicable legal and regulatory obligations.</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">4. Sharing of Information</h5>
+                <p class="text-secondary">We do not sell, rent, or trade your personal information. We share data only with:</p>
+                <ul class="text-secondary">
+                    <li><strong>Service providers</strong> — vendors assigned to your booking receive only the details required to fulfil the service (event date, guest count, and location).</li>
+                    <li><strong>Event managers &amp; planners</strong> — staff who coordinate and approve your event.</li>
+                    <li><strong>Legal authorities</strong> — when required by law or to protect the rights and safety of our users.</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">5. Data Security</h5>
+                <p class="text-secondary">We use industry-standard security measures to protect your data, including password hashing and encrypted data transmission. Access to personal data is restricted to authorised staff only. While we take all reasonable precautions, no system is completely immune to security risks.</p>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">6. Data Retention</h5>
+                <p class="text-secondary">We retain your account and booking data for as long as your account is active or as required to fulfil our legal obligations. You may request deletion of your account at any time by contacting us — see Section 8.</p>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">7. Cookies</h5>
+                <p class="text-secondary">We use session cookies strictly to maintain your login state. We do not use tracking or advertising cookies. Disabling cookies in your browser will prevent you from remaining signed in to the platform.</p>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">8. Your Rights</h5>
+                <p class="text-secondary mb-2">You have the right to:</p>
+                <ul class="text-secondary">
+                    <li>Access the personal data we hold about you.</li>
+                    <li>Request correction of inaccurate or incomplete data.</li>
+                    <li>Request deletion of your account and associated data.</li>
+                    <li>Withdraw consent at any time where processing is based on consent.</li>
+                </ul>
+                <p class="text-secondary">To exercise any of these rights, please contact us using the details in Section 9.</p>
+            </div>
+
+            <div class="mb-4">
+                <h5 class="fw-bold mb-2">9. Contact Us</h5>
+                <p class="text-secondary">If you have questions about this policy or wish to exercise your data rights, please reach out through our <a asp-controller="Home" asp-action="Contact" class="text-brand">Contact Us</a> page or write to us at:</p>
+                <address class="text-secondary mt-2">
+                    <strong>E-Zone It — Event Management</strong><br />
+                    privacy&#64;ezoneit.com<br />
+                    Available Monday – Saturday, 10 AM – 6 PM
+                </address>
+            </div>
+
+            <div>
+                <h5 class="fw-bold mb-2">10. Changes to This Policy</h5>
+                <p class="text-secondary">We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page will reflect any changes. Continued use of the platform after an update constitutes acceptance of the revised policy.</p>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+            <div class="metric-card p-4 h-auto">
+                <h6 class="fw-bold mb-3">Quick Summary</h6>
+                <ul class="list-unstyled text-secondary small">
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>Your password is never stored in plain text.</li>
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>We never sell your personal data.</li>
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>Service providers see only what they need.</li>
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>Session cookies only — no tracking cookies.</li>
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>You can request data deletion at any time.</li>
+                </ul>
+                <hr />
+                <p class="small text-secondary mb-2">Have a question about your data?</p>
+                <a asp-controller="Home" asp-action="Contact" class="btn btn-brand btn-sm w-100">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>

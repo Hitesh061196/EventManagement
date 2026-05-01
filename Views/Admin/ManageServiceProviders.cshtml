@@ -6,8 +6,8 @@
 <section class="surface-card p-4 p-lg-5">
     <div class="page-title-row">
         <div>
-            <h1 class="section-title">Manage Service Person Approve or Reject</h1>
-            <p class="section-copy">This page follows the service person onboarding flow in the plan: register, approve or reject, send password through mail simulation, then manage active providers.</p>
+            <h1 class="section-title">Manage Service Providers</h1>
+            <p class="section-copy">Review new registrations, approve or reject applicants, and manage the status of active service providers on the platform.</p>
         </div>
     </div>
 
@@ -54,7 +54,7 @@
     <h4 class="mb-3">Approved Service Person</h4>
     <div class="table-responsive mb-5">
         <table class="table table-modern align-middle">
-            <thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Status</th><th>Mail Simulation</th><th>Block</th></tr></thead>
+            <thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Status</th><th>Account Credentials</th><th>Block</th></tr></thead>
             <tbody>
             @foreach (var provider in Model.ApprovedProviders)
             {

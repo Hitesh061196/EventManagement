@@ -2,18 +2,6 @@ namespace EventManagement
 {
     public static class AppConstants
     {
-        // ── Price types ────────────────────────────────────────────────────────
-        public static readonly IReadOnlyList<string> PriceTypes = new[]
-        {
-            "For All", "Per Plate", "Per Person", "Per Event", "Per Trip", "Per Hour", "100 Guest"
-        };
-
-        // ── 6-step service workflow (plan §6) ──────────────────────────────────
-        public static readonly IReadOnlyList<string> WorkStages = new[]
-        {
-            "Confirm", "Collect Material", "Reached", "Work Start", "Work Running", "Work Finish"
-        };
-
         // ── Approval / provider statuses ───────────────────────────────────────
         public static class ApprovalStatus
         {
@@ -29,6 +17,13 @@ namespace EventManagement
             public const string ConfirmedByManager     = "Confirmed by Event Manager";
             public const string Paid                   = "Paid";
             public const string Cancelled              = "Cancelled";
+        }
+
+        // ── Payment statuses ───────────────────────────────────────────────────
+        public static class PaymentStatus
+        {
+            public const string Pending = "Pending";
+            public const string Paid    = "Paid";
         }
 
         // ── Service-line confirmation statuses ─────────────────────────────────
