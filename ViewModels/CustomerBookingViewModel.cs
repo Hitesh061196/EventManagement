@@ -42,6 +42,7 @@ namespace EventManagement.ViewModels
         public string Comment { get; set; } = string.Empty;
 
         public IReadOnlyList<EventTypeMaster> EventTypes { get; set; } = Array.Empty<EventTypeMaster>();
+        public IReadOnlyList<EventTimeMaster> EventTimes { get; set; } = Array.Empty<EventTimeMaster>();
         public IReadOnlyList<ServiceOptionViewModel> PartyPlots { get; set; } = Array.Empty<ServiceOptionViewModel>();
         public IReadOnlyList<ServiceOptionViewModel> Caterers { get; set; } = Array.Empty<ServiceOptionViewModel>();
         public IReadOnlyList<ServiceOptionViewModel> Decorations { get; set; } = Array.Empty<ServiceOptionViewModel>();

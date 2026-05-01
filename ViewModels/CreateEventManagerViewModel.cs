@@ -41,5 +41,6 @@ namespace EventManagement.ViewModels
         public IReadOnlyList<StateMaster> States { get; set; } = Array.Empty<StateMaster>();
         public IReadOnlyList<AreaMaster> Areas { get; set; } = Array.Empty<AreaMaster>();
         public IReadOnlyList<UserRegistrationDetail> ExistingStaff { get; set; } = Array.Empty<UserRegistrationDetail>();
+        public IReadOnlyList<RollDetail> AvailableRoles { get; set; } = Array.Empty<RollDetail>();
     }
 }

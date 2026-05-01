@@ -56,7 +56,7 @@
                         }
                     </div>
 
-                    @if (!booking.Event_Manager_Approved)
+                    @if (!booking.Event_Manager_Approved && Context.Session.GetString("Role") == "Event Manager")
                     {
                         <form asp-action="ConfirmOrder" method="post">
                             @Html.AntiForgeryToken()

@@ -19,14 +19,9 @@
             <span asp-validation-for="ServiceName" class="text-danger small"></span>
         </div>
         <div class="col-md-3">
-            <label asp-for="ServiceCategory" class="form-label">Category</label>
-            <select asp-for="ServiceCategory" class="form-select">
-                <option>Party Plot</option>
-                <option>Caterer</option>
-                <option>Decoration</option>
-                <option>Music</option>
-                <option>Transporter</option>
-            </select>
+            <label class="form-label">Category</label>
+            <input class="form-control" value="@Model.ProviderCategory" readonly />
+            <input type="hidden" asp-for="ServiceCategory" value="@Model.ProviderCategory" />
         </div>
         <div class="col-md-3">
             <label asp-for="EventTypeId" class="form-label">Event Type</label>
@@ -45,10 +40,10 @@
         <div class="col-md-3">
             <label asp-for="PriceType" class="form-label">Price Type</label>
             <select asp-for="PriceType" class="form-select">
-                <option value="For All">For All</option>
-                <option value="100 Guest">100 Guest</option>
-                <option value="Per Person">Per Person</option>
-                <option value="Per Hour">Per Hour</option>
+                @foreach (var pt in Model.PriceTypes)
+                {
+                    <option value="@pt">@pt</option>
+                }
             </select>
         </div>
         <div class="col-md-6">

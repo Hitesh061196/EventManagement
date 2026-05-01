@@ -42,7 +42,9 @@
                         <form asp-action="ToggleState" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@state.State_Id" />
-                            <button class="btn btn-outline-dark btn-sm" type="submit">Toggle</button>
+                            <button class="btn btn-sm @(state.State_Status ? "btn-outline-danger" : "btn-outline-success")" type="submit">
+                                @(state.State_Status ? "Set Inactive" : "Set Active")
+                            </button>
                         </form>
                     </td>
                 </tr>

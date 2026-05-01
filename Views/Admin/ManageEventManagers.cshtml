@@ -79,8 +79,10 @@
         <div class="col-md-4">
             <label class="form-label">Role</label>
             <select asp-for="RoleName" class="form-select">
-                <option>Event Manager</option>
-                <option>Event Planner</option>
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    <option value="@role.Roll_Name">@role.Roll_Name</option>
+                }
             </select>
         </div>
         <div class="col-12">

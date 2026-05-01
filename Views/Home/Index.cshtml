@@ -38,7 +38,26 @@
         {
             <div class="col-md-6 col-xl-3">
                 <div class="service-card p-3 h-100">
-                    <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900" alt="@eventType.Event_Type" />
+                    @if (eventType.Event_Type == "Birthday")
+                    {
+                        <img src="https://images.unsplash.com/photo-1602631985686-1bb0e6a8696e?w=900" alt="@eventType.Event_Type" />
+                    }
+                    else if (eventType.Event_Type == "Corporate")
+                    {
+                        <img src="https://images.unsplash.com/photo-1561489396-888724a1543d?w=900" alt="@eventType.Event_Type" />
+                    }
+                    else if (eventType.Event_Type == "Reception")
+                    {
+                        <img src="https://images.unsplash.com/photo-1761114905078-163aa92141c8?w=900" alt="@eventType.Event_Type" />
+                    }
+                    else if (eventType.Event_Type == "Wedding")
+                    {
+                        <img src="https://images.unsplash.com/photo-1738225734899-30852be7e396?w=900" alt="@eventType.Event_Type" />
+                    }
+                    else
+                    {
+                        <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900" alt="@eventType.Event_Type" />
+                    }
                     <div class="pt-3">
                         <div class="status-pill warning mb-2">@eventType.Event_Type_Status</div>
                         <h5 class="fw-bold">@eventType.Event_Type</h5>

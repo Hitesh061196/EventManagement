@@ -24,6 +24,8 @@ namespace EventManagement.Models
         public DbSet<PaymentDetail> PaymentDetails { get; set; }
         public DbSet<InquiryDetail> InquiryDetails { get; set; }
         public DbSet<FeedBackDetail> FeedBackDetails { get; set; }
+        public DbSet<EventTimeMaster> EventTimeMasters { get; set; }
+        public DbSet<ServiceProviderTypeMaster> ServiceProviderTypeMasters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

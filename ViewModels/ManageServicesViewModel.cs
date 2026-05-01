@@ -34,5 +34,7 @@ namespace EventManagement.ViewModels
 
         public IReadOnlyList<ServiceCatalogItem> ExistingServices { get; set; } = Array.Empty<ServiceCatalogItem>();
         public IReadOnlyList<EventTypeMaster> EventTypes { get; set; } = Array.Empty<EventTypeMaster>();
+        public string ProviderCategory { get; set; } = string.Empty;
+        public IReadOnlyList<string> PriceTypes { get; set; } = AppConstants.PriceTypes;
     }
 }

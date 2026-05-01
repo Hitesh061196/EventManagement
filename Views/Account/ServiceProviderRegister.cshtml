@@ -1,6 +1,8 @@
+@using EventManagement
 @{
     ViewData["Title"] = "Service Provider Register";
     var states = ViewBag.States as List<StateMaster> ?? new();
+    var serviceTypes = ViewBag.ServiceTypes as List<string> ?? new List<string>();
 }
 
 <div class="row justify-content-center">
@@ -43,11 +45,10 @@
                 <div class="col-md-6">
                     <label class="form-label">Service Type</label>
                     <select name="serviceType" class="form-select" required>
-                        <option>Party Plot</option>
-                        <option>Caterer</option>
-                        <option>Decoration</option>
-                        <option>Music</option>
-                        <option>Transporter</option>
+                        @foreach (var type in serviceTypes)
+                        {
+                            <option value="@type">@type</option>
+                        }
                     </select>
                 </div>
                 <div class="col-md-4">

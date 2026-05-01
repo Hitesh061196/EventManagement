@@ -255,6 +255,11 @@ namespace EventManagement.Controllers
                 .OrderBy(e => e.Event_Type)
                 .ToListAsync();
 
+            var eventTimes = await _context.EventTimeMasters
+                .Where(t => t.Is_Active)
+                .OrderBy(t => t.Event_Time_Id)
+                .ToListAsync();
+
             var services = await _context.ServiceCatalogItems
                 .Include(s => s.ServiceProvider)
                 .Where(s => s.Is_Active && s.ServiceProvider != null && s.ServiceProvider.Approval_Status == "Approved" && !s.ServiceProvider.Is_Blocked)
@@ -273,6 +278,7 @@ namespace EventManagement.Controllers
                 TransporterId = source?.TransporterId ?? 0,
                 Comment = source?.Comment ?? string.Empty,
                 EventTypes = eventTypes,
+                EventTimes = eventTimes,
                 PartyPlots = MapServices(services, "Party Plot", source?.PartyPlotId),
                 Caterers = MapServices(services, "Caterer", source?.CatererId),
                 Decorations = MapServices(services, "Decoration", source?.DecorationId),
