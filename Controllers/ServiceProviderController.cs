@@ -134,6 +134,7 @@ namespace EventManagement.Controllers
                 .Select(p => p.Price_Type_Name)
                 .ToListAsync();
 
+            var providerCategory = provider?.Service_Provider_Type ?? string.Empty;
             var model = new ManageServicesViewModel
             {
                 EventTypes = await _context.EventTypeMasters
@@ -146,7 +147,8 @@ namespace EventManagement.Controllers
                         .Where(s => s.Service_Provider_Id_fk == provider.Service_Provider_Id)
                         .OrderBy(s => s.Service_Name)
                         .ToListAsync(),
-                ProviderCategory = provider?.Service_Provider_Type ?? string.Empty,
+                ProviderCategory  = providerCategory,
+                ServiceCategory   = providerCategory,
                 PriceTypes = priceTypes
             };
             return View(model);
@@ -187,6 +189,7 @@ namespace EventManagement.Controllers
                     .OrderBy(s => s.Service_Name)
                     .ToListAsync();
                 model.ProviderCategory = provider.Service_Provider_Type;
+                model.ServiceCategory  = provider.Service_Provider_Type;
                 model.PriceTypes = priceTypes;
                 return View(model);
             }

@@ -21,7 +21,7 @@
         <div class="col-md-3">
             <label class="form-label">Category</label>
             <input class="form-control" value="@Model.ProviderCategory" readonly />
-            <input type="hidden" asp-for="ServiceCategory" value="@Model.ProviderCategory" />
+            <input type="hidden" name="ServiceCategory" value="@Model.ProviderCategory" />
         </div>
         <div class="col-md-3">
             <label asp-for="EventTypeId" class="form-label">Event Type</label>
