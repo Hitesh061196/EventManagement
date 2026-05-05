@@ -1,32 +1,387 @@
-@model InquiryDetail
+@model EventManagement.Models.InquiryDetail
 @{
-    ViewData["Title"] = "Inquiry";
+    ViewData["Title"] = "Contact Us";
 }
 
-<section class="surface-card p-4 p-lg-5">
-    <div class="page-title-row">
-        <div>
-            <h1 class="section-title">Visitor Contact Us Page</h1>
-            <p class="section-copy">Submit your inquiry here. The admin can later view the form, respond, and track the response date from the admin module.</p>
+<!-- Hero Banner -->
+<div class="contact-hero mb-4">
+    <div class="contact-hero-inner">
+        <div class="contact-hero-badge">
+            <i class="bi bi-chat-dots-fill me-2"></i>Get In Touch
         </div>
+        <h1 class="contact-hero-title">We're Here to Help</h1>
+        <p class="contact-hero-sub">
+            Have a question about our event packages? Need help choosing a service?
+            Send us a message and our team will respond within 24 hours.
+        </p>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- Left Column — Contact Info -->
+    <div class="col-lg-4">
+
+        <!-- Info Cards -->
+        <div class="d-flex flex-column gap-3 mb-3">
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon" style="background: linear-gradient(135deg,#f97316,#ef4444);">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div>
+                    <div class="contact-info-label">Our Office</div>
+                    <div class="contact-info-value">E-Zone It Head Office<br>Satellite, Ahmedabad — 380015<br>Gujarat, India</div>
+                </div>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon" style="background: linear-gradient(135deg,#3b82f6,#6366f1);">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+                <div>
+                    <div class="contact-info-label">Phone</div>
+                    <div class="contact-info-value">+91 98765 43210</div>
+                    <div class="contact-info-sub">Mon – Sat, 9 AM – 7 PM</div>
+                </div>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon" style="background: linear-gradient(135deg,#10b981,#059669);">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <div>
+                    <div class="contact-info-label">Email</div>
+                    <div class="contact-info-value">info@ezoneit.com</div>
+                    <div class="contact-info-sub">We reply within 24 hours</div>
+                </div>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon" style="background: linear-gradient(135deg,#f59e0b,#d97706);">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div>
+                    <div class="contact-info-label">Working Hours</div>
+                    <div class="contact-info-value">Monday – Saturday</div>
+                    <div class="contact-info-sub">9:00 AM – 7:00 PM IST</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="surface-card p-4">
+            <div class="fw-semibold mb-3" style="font-size:0.95rem;">Quick Links</div>
+            <div class="d-flex flex-column gap-2">
+                <a class="contact-quick-link" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-fill me-2"></i>Home
+                </a>
+                <a class="contact-quick-link" asp-controller="Home" asp-action="About">
+                    <i class="bi bi-info-circle-fill me-2"></i>About E-Zone It
+                </a>
+                @if (string.IsNullOrEmpty(Context.Session.GetString("Role")))
+                {
+                    <a class="contact-quick-link" asp-controller="Account" asp-action="Register">
+                        <i class="bi bi-person-plus-fill me-2"></i>Register as Customer
+                    </a>
+                    <a class="contact-quick-link" asp-controller="Account" asp-action="ServiceProviderRegister">
+                        <i class="bi bi-shop me-2"></i>Register as Service Provider
+                    </a>
+                }
+                else if (Context.Session.GetString("Role") == "Customer")
+                {
+                    <a class="contact-quick-link" asp-controller="Customer" asp-action="BookEvent">
+                        <i class="bi bi-calendar-plus-fill me-2"></i>Book an Event
+                    </a>
+                    <a class="contact-quick-link" asp-controller="Customer" asp-action="TrackStatus">
+                        <i class="bi bi-search me-2"></i>Track My Booking
+                    </a>
+                }
+            </div>
+        </div>
+
     </div>
 
-    <form asp-action="Contact" method="post" class="row g-3">
-        @Html.AntiForgeryToken()
-        <div class="col-md-6">
-            <label class="form-label">Name</label>
-            <input asp-for="Name" class="form-control" />
+    <!-- Right Column — Inquiry Form -->
+    <div class="col-lg-8">
+        <div class="surface-card p-4 p-lg-5">
+
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1" style="font-size:1.45rem;">Send Us a Message</h2>
+                <p class="text-muted mb-0" style="font-size:0.9rem;">
+                    Fill in the form below and our team will reach out to you shortly.
+                </p>
+            </div>
+
+            <form asp-action="Contact" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label fw-semibold">
+                            <i class="bi bi-person me-1 text-muted"></i>Full Name <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">
+                            <i class="bi bi-envelope me-1 text-muted"></i>Email Address <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Email" class="form-control" placeholder="you@example.com" type="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Question" class="form-label fw-semibold">
+                            <i class="bi bi-chat-text me-1 text-muted"></i>Your Message <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Question" class="form-control" rows="6"
+                                  placeholder="Tell us about your event, question, or requirement..."></textarea>
+                        <span asp-validation-for="Question" class="text-danger small"></span>
+                    </div>
+
+                    <!-- What to expect info -->
+                    <div class="col-12">
+                        <div class="contact-expect-box">
+                            <i class="bi bi-info-circle-fill me-2" style="color:#3b82f6;"></i>
+                            <span>After submission, the admin will review your inquiry and reply by email. You can submit multiple inquiries.</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-brand px-4">
+                            <i class="bi bi-send-fill me-2"></i>Send Message
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-x-circle me-2"></i>Clear
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
         </div>
-        <div class="col-md-6">
-            <label class="form-label">Email</label>
-            <input asp-for="Email" class="form-control" />
+
+        <!-- FAQ Section -->
+        <div class="surface-card p-4 p-lg-5 mt-4">
+            <h3 class="fw-bold mb-4" style="font-size:1.2rem;">
+                <i class="bi bi-question-circle-fill me-2" style="color:#f97316;"></i>Frequently Asked Questions
+            </h3>
+
+            <div class="accordion accordion-flush contact-faq" id="faqAccordion">
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I book an event package?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Register as a Customer, log in, and go to <strong>Book Event</strong>. Select your event type, date, guest count, and preferred services (Party Plot, Caterer, Decoration, Music, Transporter). The event manager will confirm your booking.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            How long does admin approval take for service providers?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Service provider registrations are reviewed within 1–2 business days. Once approved, you will receive login credentials via email and can start listing your services.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Can I track the status of my event after booking?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes. Log in as a Customer and visit <strong>Track Status</strong>. You can see real-time service progress updated by each service provider through the 6-stage workflow.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            What payment methods are accepted?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            We accept online payment through our secure payment gateway. Payment is collected after the event manager confirms your booking. You will see the payment option under Track Status.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            How do I change my password after first login?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            After logging in, click <strong>Change Password</strong> in the navigation bar. Enter your current password and set a new one. Staff and service provider accounts are required to change their password on first login.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <div class="col-12">
-            <label class="form-label">Question</label>
-            <textarea asp-for="Question" class="form-control" rows="4"></textarea>
-        </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-brand">Submit Inquiry</button>
-        </div>
-    </form>
-</section>
+
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<style>
+    .contact-hero {
+        border-radius: 1.5rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(15,23,42,0.94), rgba(30,41,59,0.88)),
+                    linear-gradient(135deg, rgba(249,115,22,0.22), rgba(59,130,246,0.18));
+        padding: 3rem 2.5rem;
+        text-align: center;
+        color: #fff;
+    }
+
+    .contact-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        background: rgba(249,115,22,0.18);
+        border: 1px solid rgba(249,115,22,0.35);
+        color: #fb923c;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+    }
+
+    .contact-hero-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+    }
+
+    .contact-hero-sub {
+        color: rgba(255,255,255,0.72);
+        max-width: 42rem;
+        margin: 0 auto;
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    .contact-info-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.2rem 1.4rem;
+        border-radius: 1.25rem;
+        background: rgba(255,255,255,0.72);
+        border: 1px solid rgba(148,163,184,0.22);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+    }
+
+    .contact-info-icon {
+        flex-shrink: 0;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.85rem;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 1.05rem;
+    }
+
+    .contact-info-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94a3b8;
+        margin-bottom: 0.15rem;
+    }
+
+    .contact-info-value {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .contact-info-sub {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 0.15rem;
+    }
+
+    .contact-quick-link {
+        display: flex;
+        align-items: center;
+        padding: 0.55rem 0.85rem;
+        border-radius: 0.75rem;
+        color: #334155;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .contact-quick-link:hover {
+        background: rgba(249,115,22,0.08);
+        color: #ea580c;
+    }
+
+    .contact-expect-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.9rem 1.1rem;
+        border-radius: 0.9rem;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.15);
+        font-size: 0.85rem;
+        color: #334155;
+        line-height: 1.55;
+    }
+
+    .contact-faq .accordion-button {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #1e293b;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .contact-faq .accordion-button:not(.collapsed) {
+        color: #ea580c;
+        background: rgba(249,115,22,0.05);
+    }
+
+    .contact-faq .accordion-item {
+        border-color: rgba(148,163,184,0.2);
+        background: transparent;
+    }
+
+    @@media (max-width: 767.98px) {
+        .contact-hero { padding: 2rem 1.25rem; }
+        .contact-hero-title { font-size: 1.6rem; }
+    }
+</style>

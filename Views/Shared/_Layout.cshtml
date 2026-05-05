@@ -29,8 +29,8 @@
                     <div class="collapse navbar-collapse" id="mainNav">
                         <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                             <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">About</a></li>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Inquiry</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">About Us</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Contact Us</a></li>
                             @if (string.IsNullOrEmpty(role))
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Customer Register</a></li>
@@ -71,16 +71,17 @@
         </main>
 
         <footer class="site-footer">
-            @* <div class="container d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+            <div class="container d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
                 <div>
-                    <div class="fw-semibold text-white">Plan-aligned Event Management Demo</div>
-                    <div class="small text-brand-muted">Visitor, admin, customer, service provider, and event manager flows in one application.</div>
+                    <div class="fw-semibold text-white">E-Zone It — Event Management</div>
+                    <div class="small text-brand-muted">Your trusted partner for seamless, end-to-end event planning and management.</div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-sm btn-outline-light" asp-controller="Seed" asp-action="Index">Re-seed Demo Data</a>
+                    <a class="btn btn-sm btn-outline-light" asp-controller="Home" asp-action="About">About Us</a>
+                    <a class="btn btn-sm btn-outline-light" asp-controller="Home" asp-action="Contact">Contact Us</a>
                     <a class="btn btn-sm btn-outline-light" asp-controller="Home" asp-action="Privacy">Privacy</a>
                 </div>
-            </div> *@
+            </div>
         </footer>
     </div>
 

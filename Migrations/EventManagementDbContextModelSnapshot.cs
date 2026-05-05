@@ -443,6 +443,30 @@ namespace EventManagement.Migrations
                     b.ToTable("Payment_Detail");
                 });
 
+            modelBuilder.Entity("EventManagement.Models.PriceTypeMaster", b =>
+                {
+                    b.Property<int>("Price_Type_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Price_Type_Id"));
+
+                    b.Property<bool>("Is_Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Price_Type_Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Sort_Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("Price_Type_Id");
+
+                    b.ToTable("Price_Type_Master");
+                });
+
             modelBuilder.Entity("EventManagement.Models.RollDetail", b =>
                 {
                     b.Property<int>("Roll_Id")
@@ -697,6 +721,30 @@ namespace EventManagement.Migrations
                     b.HasIndex("Login_Id_fk");
 
                     b.ToTable("User_Registration_Detail");
+                });
+
+            modelBuilder.Entity("EventManagement.Models.WorkStageMaster", b =>
+                {
+                    b.Property<int>("Work_Stage_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Work_Stage_Id"));
+
+                    b.Property<bool>("Is_Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Stage_Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Stage_Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("Work_Stage_Id");
+
+                    b.ToTable("Work_Stage_Master");
                 });
 
             modelBuilder.Entity("EventManagement.Models.AreaMaster", b =>

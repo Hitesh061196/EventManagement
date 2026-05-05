@@ -47,15 +47,15 @@ namespace EventManagement.Controllers
                 .Include(s => s.ServiceProvider)
                 .Where(s => s.Is_Active &&
                             s.ServiceProvider != null &&
-                            s.ServiceProvider.Approval_Status == "Approved" &&
+                            s.ServiceProvider.Approval_Status == AppConstants.ApprovalStatus.Approved &&
                             !s.ServiceProvider.Is_Blocked)
                 .ToListAsync();
 
-            ValidateSelection(activeServices, model.PartyPlotId, nameof(model.PartyPlotId), "Party Plot", true);
-            ValidateSelection(activeServices, model.CatererId, nameof(model.CatererId), "Caterer", true);
-            ValidateSelection(activeServices, model.DecorationId, nameof(model.DecorationId), "Decoration", false);
-            ValidateSelection(activeServices, model.MusicId, nameof(model.MusicId), "Music", false);
-            ValidateSelection(activeServices, model.TransporterId, nameof(model.TransporterId), "Transporter", true);
+            ValidateSelection(activeServices, model.PartyPlotId,   nameof(model.PartyPlotId),   "Party Plot",  true);
+            ValidateSelection(activeServices, model.CatererId,      nameof(model.CatererId),      "Caterer",     true);
+            ValidateSelection(activeServices, model.DecorationId,   nameof(model.DecorationId),   "Decoration",  false);
+            ValidateSelection(activeServices, model.MusicId,        nameof(model.MusicId),        "Music",       false);
+            ValidateSelection(activeServices, model.TransporterId,  nameof(model.TransporterId),  "Transporter", true);
 
             if (!ModelState.IsValid)
             {
@@ -75,7 +75,7 @@ namespace EventManagement.Controllers
                 .AnyAsync(s => s.Service_Catalog_Item_Id_fk == model.PartyPlotId &&
                                s.Booking != null &&
                                s.Booking.Date.Date == model.Date.Date &&
-                               s.Booking.Booking_Status != "Cancelled");
+                               s.Booking.Booking_Status != AppConstants.BookingStatus.Cancelled);
 
             if (sameDateConflict)
             {
@@ -89,19 +89,19 @@ namespace EventManagement.Controllers
             var booking = new BookingCartDetail
             {
                 Event_Package_Id_fk = model.EventTypeId,
-                Custom_Id_fk = customerProfileId,
-                Date = model.Date,
-                Guest_Count = model.GuestCount,
-                Event_Time = model.EventTime,
-                From_Time = model.FromTime,
-                To_Time = model.ToTime,
-                Ammount = amount,
-                Status = true,
-                Comment = string.IsNullOrWhiteSpace(model.Comment) ? $"Booked for {model.GuestCount} guests" : model.Comment,
-                Booking_Reference = $"EM-{DateTime.Now:yyyyMMddHHmmss}",
-                Booking_Status = "Pending Event Manager Approval",
-                Payment_Status = "Pending",
-                Created_On = DateTime.UtcNow
+                Custom_Id_fk        = customerProfileId,
+                Date                = model.Date,
+                Guest_Count         = model.GuestCount,
+                Event_Time          = model.EventTime,
+                From_Time           = model.FromTime,
+                To_Time             = model.ToTime,
+                Ammount             = amount,
+                Status              = true,
+                Comment             = string.IsNullOrWhiteSpace(model.Comment) ? $"Booked for {model.GuestCount} guests" : model.Comment,
+                Booking_Reference   = $"EM-{DateTime.Now:yyyyMMddHHmmss}",
+                Booking_Status      = AppConstants.BookingStatus.PendingManagerApproval,
+                Payment_Status      = AppConstants.PaymentStatus.Pending,
+                Created_On          = DateTime.UtcNow
             };
             _context.BookingCartDetails.Add(booking);
             await _context.SaveChangesAsync();
@@ -110,11 +110,11 @@ namespace EventManagement.Controllers
             {
                 _context.BookingServiceDetails.Add(new BookingServiceDetail
                 {
-                    Booking_Id_fk = booking.Booking_Id,
+                    Booking_Id_fk              = booking.Booking_Id,
                     Service_Catalog_Item_Id_fk = service.Service_Catalog_Item_Id,
-                    Service_Category = service.Service_Category,
-                    Price = service.Price,
-                    Confirmation_Status = "Pending"
+                    Service_Category           = service.Service_Category,
+                    Price                      = service.Price,
+                    Confirmation_Status        = AppConstants.ConfirmationStatus.Pending
                 });
             }
 
@@ -140,10 +140,10 @@ namespace EventManagement.Controllers
                 .OrderByDescending(b => b.Date)
                 .Select(b => new BookingStatusViewModel
                 {
-                    Booking = b,
-                    Services = b.Services.OrderBy(s => s.Service_Category).ToList(),
-                    StatusUpdates = b.StatusUpdates.OrderByDescending(s => s.Date).ToList(),
-                    Payments = b.Payments.OrderByDescending(p => p.Paid_On).ToList()
+                    Booking        = b,
+                    Services       = b.Services.OrderBy(s => s.Service_Category).ToList(),
+                    StatusUpdates  = b.StatusUpdates.OrderByDescending(s => s.Date).ToList(),
+                    Payments       = b.Payments.OrderByDescending(p => p.Paid_On).ToList()
                 })
                 .ToListAsync();
 
@@ -189,17 +189,17 @@ namespace EventManagement.Controllers
                 return RedirectToAction(nameof(TrackStatus));
             }
 
-            booking.Payment_Status = "Paid";
-            booking.Booking_Status = "Paid";
+            booking.Payment_Status = AppConstants.PaymentStatus.Paid;
+            booking.Booking_Status = AppConstants.BookingStatus.Paid;
 
             _context.PaymentDetails.Add(new PaymentDetail
             {
-                Booking_Id_fk = booking.Booking_Id,
-                Amount = booking.Ammount,
-                Payment_Method = paymentMethod,
-                Payment_Status = "Paid",
+                Booking_Id_fk         = booking.Booking_Id,
+                Amount                = booking.Ammount,
+                Payment_Method        = paymentMethod,
+                Payment_Status        = AppConstants.PaymentStatus.Paid,
                 Transaction_Reference = $"PAY-{Guid.NewGuid():N}"[..12].ToUpperInvariant(),
-                Paid_On = DateTime.UtcNow
+                Paid_On               = DateTime.UtcNow
             });
 
             await _context.SaveChangesAsync();
@@ -236,7 +236,7 @@ namespace EventManagement.Controllers
 
         private bool IsCustomer()
         {
-            return HttpContext.Session.GetString("Role") == "Customer";
+            return HttpContext.Session.GetString("Role") == AppConstants.Roles.Customer;
         }
 
         private async Task<int> GetCustomerProfileIdAsync()
@@ -251,7 +251,7 @@ namespace EventManagement.Controllers
         private async Task<CustomerBookingViewModel> BuildBookingViewModelAsync(CustomerBookingViewModel? source = null)
         {
             var eventTypes = await _context.EventTypeMasters
-                .Where(e => e.Event_Type_Status == "Active")
+                .Where(e => e.Event_Type_Status == AppConstants.EventTypeStatus.Active)
                 .OrderBy(e => e.Event_Type)
                 .ToListAsync();
 
@@ -262,27 +262,30 @@ namespace EventManagement.Controllers
 
             var services = await _context.ServiceCatalogItems
                 .Include(s => s.ServiceProvider)
-                .Where(s => s.Is_Active && s.ServiceProvider != null && s.ServiceProvider.Approval_Status == "Approved" && !s.ServiceProvider.Is_Blocked)
+                .Where(s => s.Is_Active &&
+                            s.ServiceProvider != null &&
+                            s.ServiceProvider.Approval_Status == AppConstants.ApprovalStatus.Approved &&
+                            !s.ServiceProvider.Is_Blocked)
                 .OrderBy(s => s.Service_Name)
                 .ToListAsync();
 
             return new CustomerBookingViewModel
             {
-                EventTypeId = source?.EventTypeId ?? eventTypes.FirstOrDefault()?.Event_Id ?? 0,
-                Date = source?.Date ?? DateTime.Today.AddDays(7),
-                GuestCount = source?.GuestCount ?? 100,
-                PartyPlotId = source?.PartyPlotId ?? 0,
-                CatererId = source?.CatererId ?? 0,
+                EventTypeId  = source?.EventTypeId ?? eventTypes.FirstOrDefault()?.Event_Id ?? 0,
+                Date         = source?.Date ?? DateTime.Today.AddDays(7),
+                GuestCount   = source?.GuestCount ?? 100,
+                PartyPlotId  = source?.PartyPlotId ?? 0,
+                CatererId    = source?.CatererId ?? 0,
                 DecorationId = source?.DecorationId,
-                MusicId = source?.MusicId,
+                MusicId      = source?.MusicId,
                 TransporterId = source?.TransporterId ?? 0,
-                Comment = source?.Comment ?? string.Empty,
-                EventTypes = eventTypes,
-                EventTimes = eventTimes,
-                PartyPlots = MapServices(services, "Party Plot", source?.PartyPlotId),
-                Caterers = MapServices(services, "Caterer", source?.CatererId),
-                Decorations = MapServices(services, "Decoration", source?.DecorationId),
-                Musics = MapServices(services, "Music", source?.MusicId),
+                Comment      = source?.Comment ?? string.Empty,
+                EventTypes   = eventTypes,
+                EventTimes   = eventTimes,
+                PartyPlots   = MapServices(services, "Party Plot",  source?.PartyPlotId),
+                Caterers     = MapServices(services, "Caterer",     source?.CatererId),
+                Decorations  = MapServices(services, "Decoration",  source?.DecorationId),
+                Musics       = MapServices(services, "Music",       source?.MusicId),
                 Transporters = MapServices(services, "Transporter", source?.TransporterId)
             };
         }
@@ -293,15 +296,15 @@ namespace EventManagement.Controllers
                 .Where(s => s.Service_Category == category)
                 .Select(s => new ServiceOptionViewModel
                 {
-                    Id = s.Service_Catalog_Item_Id,
-                    EventTypeId = s.Event_Type_Id_fk,
-                    Name = s.Service_Name,
-                    Category = s.Service_Category,
-                    Price = s.Price,
-                    Description = s.Description,
-                    PhotoUrl = s.Photo_Url,
+                    Id           = s.Service_Catalog_Item_Id,
+                    EventTypeId  = s.Event_Type_Id_fk,
+                    Name         = s.Service_Name,
+                    Category     = s.Service_Category,
+                    Price        = s.Price,
+                    Description  = s.Description,
+                    PhotoUrl     = s.Photo_Url,
                     ProviderName = s.ServiceProvider?.Service_Provider_Name ?? string.Empty,
-                    IsSelected = s.Service_Catalog_Item_Id == selectedId
+                    IsSelected   = s.Service_Catalog_Item_Id == selectedId
                 })
                 .ToList();
         }
@@ -329,4 +332,3 @@ namespace EventManagement.Controllers
         }
     }
 }
-

@@ -34,15 +34,17 @@ namespace EventManagement.Controllers
                     return View();
                 }
 
-                HttpContext.Session.SetString("UserId", login.Login_Id.ToString());
+                HttpContext.Session.SetString("UserId",   login.Login_Id.ToString());
                 HttpContext.Session.SetString("UserName", login.User_Name);
-                HttpContext.Session.SetString("Role", login.Roll!.Roll_Name);
+                HttpContext.Session.SetString("Role",     login.Roll!.Roll_Name);
+
                 return login.Roll.Roll_Name switch
                 {
-                    "Admin" => RedirectToAction("Index", "Admin"),
-                    "Customer" => RedirectToAction("BookEvent", "Customer"),
-                    "Service Provider" => RedirectToAction("Index", "ServiceProvider"),
-                    "Event Manager" or "Event Planner" => RedirectToAction("Index", "EventManager"),
+                    AppConstants.Roles.Admin           => RedirectToAction("Index",     "Admin"),
+                    AppConstants.Roles.Customer        => RedirectToAction("BookEvent", "Customer"),
+                    AppConstants.Roles.ServiceProvider => RedirectToAction("Index",     "ServiceProvider"),
+                    AppConstants.Roles.EventManager
+                        or AppConstants.Roles.EventPlanner => RedirectToAction("Index", "EventManager"),
                     _ => RedirectToAction("Index", "Home")
                 };
             }
@@ -104,29 +106,29 @@ namespace EventManagement.Controllers
             }
 
             var customerRoleId = await _context.RollDetails
-                .Where(r => r.Roll_Name == "Customer")
+                .Where(r => r.Roll_Name == AppConstants.Roles.Customer)
                 .Select(r => r.Roll_Id)
                 .FirstAsync();
 
             var login = new LoginDetail
             {
-                User_Name = email,
-                Password = password,
+                User_Name  = email,
+                Password   = password,
                 Roll_Id_fk = customerRoleId,
-                Is_Active = true
+                Is_Active  = true
             };
             _context.LoginDetails.Add(login);
             await _context.SaveChangesAsync();
 
             _context.UserRegistrationDetails.Add(new UserRegistrationDetail
             {
-                First_Name = firstName,
-                Last_Name = lastName,
-                Address = address,
-                Contact_No = contactNo,
-                Email_Id = email,
-                Gender = gender,
-                Area_Id_fk = areaId,
+                First_Name  = firstName,
+                Last_Name   = lastName,
+                Address     = address,
+                Contact_No  = contactNo,
+                Email_Id    = email,
+                Gender      = gender,
+                Area_Id_fk  = areaId,
                 Login_Id_fk = login.Login_Id
             });
             await _context.SaveChangesAsync();
@@ -167,35 +169,39 @@ namespace EventManagement.Controllers
                 return RedirectToAction(nameof(ServiceProviderRegister));
             }
 
-            var roleId = await _context.RollDetails.Where(r => r.Roll_Name == "Service Provider").Select(r => r.Roll_Id).FirstAsync();
-            var generatedPassword = $"{serviceType.Replace(" ", string.Empty).ToLowerInvariant()}123";
+            var roleId = await _context.RollDetails
+                .Where(r => r.Roll_Name == AppConstants.Roles.ServiceProvider)
+                .Select(r => r.Roll_Id)
+                .FirstAsync();
+
+            var generatedPassword = AppConstants.GeneratePassword();
 
             var login = new LoginDetail
             {
-                User_Name = email,
-                Password = generatedPassword,
-                Roll_Id_fk = roleId,
-                Is_Active = false,
+                User_Name            = email,
+                Password             = generatedPassword,
+                Roll_Id_fk           = roleId,
+                Is_Active            = false,
                 Must_Change_Password = true,
-                Last_Notification = $"Pending approval for {providerName}. Proposed credentials {email}/{generatedPassword}."
+                Last_Notification    = $"Pending approval for {providerName}. Proposed credentials {email}/{generatedPassword}."
             };
             _context.LoginDetails.Add(login);
             await _context.SaveChangesAsync();
 
             _context.ServiceProviders.Add(new EventManagement.Models.ServiceProvider
             {
-                Service_Provider_Name = providerName,
-                Email_Id = email,
-                Mobile_No = mobileNo,
-                Shop_Name = shopName,
-                Gender = gender,
-                Address = address,
+                Service_Provider_Name       = providerName,
+                Email_Id                    = email,
+                Mobile_No                   = mobileNo,
+                Shop_Name                   = shopName,
+                Gender                      = gender,
+                Address                     = address,
                 Service_Provider_Area_Id_fk = areaId,
-                Service_Provider_Type = serviceType,
-                Login_Id_fk = login.Login_Id,
-                Approval_Status = "Pending",
-                Description = description,
-                Profile_Image_Url = profileImageUrl
+                Service_Provider_Type       = serviceType,
+                Login_Id_fk                 = login.Login_Id,
+                Approval_Status             = AppConstants.ApprovalStatus.Pending,
+                Description                 = description,
+                Profile_Image_Url           = profileImageUrl
             });
             await _context.SaveChangesAsync();
 
@@ -250,4 +256,3 @@ namespace EventManagement.Controllers
         }
     }
 }
-
