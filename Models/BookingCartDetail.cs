@@ -45,6 +45,9 @@ namespace EventManagement.Models
 
         public bool Event_Manager_Approved { get; set; }
 
+        [StringLength(200)]
+        public string? Rejection_Reason { get; set; }
+
         public int? Event_Manager_Login_Id_fk { get; set; }
 
         public DateTime Created_On { get; set; } = DateTime.UtcNow;

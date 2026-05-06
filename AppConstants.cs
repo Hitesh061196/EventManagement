@@ -15,6 +15,7 @@ namespace EventManagement
         {
             public const string PendingManagerApproval = "Pending Event Manager Approval";
             public const string ConfirmedByManager     = "Confirmed by Event Manager";
+            public const string RejectedByManager      = "Rejected by Event Manager";
             public const string Paid                   = "Paid";
             public const string Cancelled              = "Cancelled";
         }

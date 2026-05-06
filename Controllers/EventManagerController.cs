@@ -55,7 +55,30 @@ namespace EventManagement.Controllers
                 booking.Event_Manager_Login_Id_fk = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
                 booking.Booking_Status            = AppConstants.BookingStatus.ConfirmedByManager;
                 await _context.SaveChangesAsync();
-                TempData["Success"] = $"Event manager confirm order completed for {booking.Booking_Reference}.";
+                TempData["Success"] = $"Order {booking.Booking_Reference} has been confirmed.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectOrder(int id, string reason)
+        {
+            if (HttpContext.Session.GetString("Role") != AppConstants.Roles.EventManager)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var booking = await _context.BookingCartDetails.FindAsync(id);
+            if (booking != null)
+            {
+                booking.Event_Manager_Approved    = false;
+                booking.Event_Manager_Login_Id_fk = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+                booking.Booking_Status            = AppConstants.BookingStatus.RejectedByManager;
+                booking.Rejection_Reason          = reason;
+                await _context.SaveChangesAsync();
+                TempData["Error"] = $"Order {booking.Booking_Reference} has been rejected.";
             }
 
             return RedirectToAction(nameof(Index));
