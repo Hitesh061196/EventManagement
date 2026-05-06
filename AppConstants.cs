@@ -26,6 +26,14 @@ namespace EventManagement
             public const string Paid    = "Paid";
         }
 
+        // ── Payment methods ────────────────────────────────────────────────────
+        public static class PaymentMethod
+        {
+            public const string Upi        = "UPI";
+            public const string CreditCard = "Credit Card";
+            public const string NetBanking = "Net Banking";
+        }
+
         // ── Service-line confirmation statuses ─────────────────────────────────
         public static class ConfirmationStatus
         {
@@ -38,6 +46,14 @@ namespace EventManagement
         {
             public const string Active   = "Active";
             public const string Inactive = "Inactive";
+        }
+
+        // ── Event timing statuses (computed from date/time, not stored) ────────
+        public static class EventTimingStatus
+        {
+            public const string Upcoming   = "Upcoming";
+            public const string InProgress = "In Progress";
+            public const string Completed  = "Completed";
         }
 
         // ── Role names (must match Roll_Detail seeds) ──────────────────────────

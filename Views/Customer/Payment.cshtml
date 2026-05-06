@@ -6,34 +6,343 @@
 <section class="surface-card p-4 p-lg-5">
     <div class="page-title-row">
         <div>
-            <h1 class="section-title">Payment Page</h1>
-            <p class="section-copy">All statuses and all event runs lead here once the event manager approves the order.</p>
+            <h1 class="section-title">Complete Payment</h1>
+            <p class="section-copy">Choose your preferred payment method and complete the booking securely.</p>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="metric-card p-4 h-100">
-                <div class="small text-secondary">Booking Reference</div>
-                <h4 class="fw-bold">@Model.Booking_Reference</h4>
-                <div class="small text-secondary mb-2">@Model.EventType?.Event_Type</div>
-                <div class="price-pill">@Model.Ammount.ToString("C0")</div>
+
+        @*-- Booking Summary --*@
+        <div class="col-lg-5">
+            <div class="metric-card p-4 h-100 d-flex flex-column">
+                <div class="small text-secondary mb-1">Booking Reference</div>
+                <h4 class="fw-bold mb-1">@Model.Booking_Reference</h4>
+                <div class="small text-secondary mb-3">@Model.EventType?.Event_Type</div>
+                <div class="price-pill fs-5 px-3 py-2 align-self-start mb-4">@Model.Ammount.ToString("C0")</div>
+                <hr class="my-0" />
+                <div class="d-flex flex-column gap-2 mt-3">
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-secondary">Event Date</span>
+                        <span class="fw-semibold">@Model.Date.ToString("dd MMM yyyy")</span>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-secondary">Guests</span>
+                        <span class="fw-semibold">@Model.Guest_Count</span>
+                    </div>
+                    <div class="d-flex justify-content-between small align-items-center">
+                        <span class="text-secondary">Status</span>
+                        <span class="status-pill warning">Pending Payment</span>
+                    </div>
+                </div>
+                <div class="mt-auto pt-4 border-top d-flex gap-3 flex-wrap">
+                    <div class="d-flex align-items-center gap-1 small text-secondary">
+                        <i class="bi bi-shield-lock-fill text-success"></i> 256-bit SSL
+                    </div>
+                    <div class="d-flex align-items-center gap-1 small text-secondary">
+                        <i class="bi bi-lock-fill text-success"></i> Secure
+                    </div>
+                    <div class="d-flex align-items-center gap-1 small text-secondary">
+                        <i class="bi bi-patch-check-fill text-success"></i> PCI DSS
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <form method="post" asp-action="Payment" class="surface-card p-4 h-100">
+
+        @*-- Payment Form --*@
+        <div class="col-lg-7">
+            <form method="post" asp-action="Payment" id="paymentForm" novalidate>
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Booking_Id" />
-                <div class="mb-3">
-                    <label class="form-label">Payment Method</label>
-                    <select name="paymentMethod" class="form-select">
-                        <option>UPI</option>
-                        <option>Credit Card</option>
-                        <option>Net Banking</option>
-                    </select>
+                <input type="hidden" name="paymentMethod" id="hiddenPaymentMethod" value="UPI" />
+
+                <div class="surface-card p-4">
+
+                    @*-- Method Tabs --*@
+                    <div class="mb-4">
+                        <div class="small fw-semibold text-secondary mb-2 text-uppercase ls-1">Payment Method</div>
+                        <div class="pm-tabs">
+                            <button type="button" class="pm-tab active" data-method="UPI">
+                                <i class="bi bi-phone-fill"></i>
+                                <span>UPI</span>
+                            </button>
+                            <button type="button" class="pm-tab" data-method="Credit Card">
+                                <i class="bi bi-credit-card-fill"></i>
+                                <span>Card</span>
+                            </button>
+                            <button type="button" class="pm-tab" data-method="Net Banking">
+                                <i class="bi bi-bank2"></i>
+                                <span>Net Banking</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    @*-- UPI Section --*@
+                    <div id="section-UPI" class="pm-section">
+                        <div class="upi-qr-box text-center p-4 mb-3">
+                            <svg class="qr-svg mb-3" width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="140" height="140" fill="white" rx="8"/>
+                                <rect x="10" y="10" width="50" height="50" rx="4" fill="none" stroke="#1e293b" stroke-width="4"/>
+                                <rect x="20" y="20" width="30" height="30" fill="#1e293b" rx="2"/>
+                                <rect x="80" y="10" width="50" height="50" rx="4" fill="none" stroke="#1e293b" stroke-width="4"/>
+                                <rect x="90" y="20" width="30" height="30" fill="#1e293b" rx="2"/>
+                                <rect x="10" y="80" width="50" height="50" rx="4" fill="none" stroke="#1e293b" stroke-width="4"/>
+                                <rect x="20" y="90" width="30" height="30" fill="#1e293b" rx="2"/>
+                                <rect x="80" y="80" width="10" height="10" fill="#1e293b" rx="1"/>
+                                <rect x="96" y="80" width="10" height="10" fill="#1e293b" rx="1"/>
+                                <rect x="112" y="80" width="18" height="10" fill="#1e293b" rx="1"/>
+                                <rect x="80" y="96" width="18" height="10" fill="#1e293b" rx="1"/>
+                                <rect x="104" y="96" width="10" height="10" fill="#1e293b" rx="1"/>
+                                <rect x="80" y="112" width="10" height="18" fill="#1e293b" rx="1"/>
+                                <rect x="96" y="112" width="10" height="18" fill="#1e293b" rx="1"/>
+                                <rect x="112" y="112" width="18" height="18" fill="#1e293b" rx="1"/>
+                            </svg>
+                            <div class="small text-secondary">Scan with any UPI app</div>
+                            <div class="fw-bold mt-1">ezone-it&#64;upi</div>
+                            <div class="small text-muted mt-1 d-flex justify-content-center gap-2 flex-wrap">
+                                <span>Google Pay</span><span>·</span><span>PhonePe</span><span>·</span><span>Paytm</span><span>·</span><span>BHIM</span>
+                            </div>
+                        </div>
+                        <div class="divider-or my-3">OR enter UPI ID</div>
+                        <label class="form-label small fw-semibold">UPI ID</label>
+                        <input type="text" id="upiId" class="form-control" placeholder="yourname&#64;bankname" autocomplete="off" />
+                        <div class="invalid-feedback">Please enter a valid UPI ID (e.g. name&#64;okicici).</div>
+                        <div class="form-text">Accepted: name&#64;okicici, number&#64;paytm, mobile&#64;ybl, etc.</div>
+                    </div>
+
+                    @*-- Card Section --*@
+                    <div id="section-Credit Card" class="pm-section d-none">
+                        <div class="card-visual mb-4">
+                            <div class="card-chip"></div>
+                            <div class="card-number-display" id="cardDisplay">•••• •••• •••• ••••</div>
+                            <div class="d-flex justify-content-between align-items-end mt-3">
+                                <div>
+                                    <div class="card-label">Card Holder</div>
+                                    <div class="card-value" id="holderDisplay">YOUR NAME</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="card-label">Expires</div>
+                                    <div class="card-value" id="expiryDisplay">MM / YY</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Card Number</label>
+                                <input type="text" id="cardNumber" class="form-control font-mono" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number" inputmode="numeric" />
+                                <div class="invalid-feedback">Please enter a valid 16-digit card number.</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Card Holder Name</label>
+                                <input type="text" id="cardHolder" class="form-control" placeholder="Name as printed on card" maxlength="50" autocomplete="cc-name" />
+                                <div class="invalid-feedback">Please enter the card holder name.</div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Expiry Month</label>
+                                <select id="expiryMonth" class="form-select" autocomplete="cc-exp-month">
+                                    <option value="">Month</option>
+                                    @for (int m = 1; m <= 12; m++)
+                                    {
+                                        var mm  = m.ToString("D2");
+                                        var mmn = new DateTime(2000, m, 1).ToString("MMM");
+                                        <option value="@mm">@mm – @mmn</option>
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Select month.</div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold">Expiry Year</label>
+                                <select id="expiryYear" class="form-select" autocomplete="cc-exp-year">
+                                    <option value="">Year</option>
+                                    @for (int y = DateTime.Now.Year; y <= DateTime.Now.Year + 10; y++)
+                                    {
+                                        <option value="@y">@y</option>
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Select year.</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">CVV</label>
+                                <div class="input-group" style="max-width:180px">
+                                    <input type="password" id="cvv" class="form-control font-mono" placeholder="•••" maxlength="4" autocomplete="cc-csc" inputmode="numeric" />
+                                    <span class="input-group-text" title="3-digit code on the back of your card (Amex: 4 on front)">
+                                        <i class="bi bi-question-circle text-muted"></i>
+                                    </span>
+                                </div>
+                                <div class="invalid-feedback" style="display:block;visibility:hidden" id="cvvError">Please enter a valid CVV.</div>
+                                <div class="form-text">3 digits on back (Amex: 4 on front)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*-- Net Banking Section --*@
+                    <div id="section-Net Banking" class="pm-section d-none">
+                        <div class="small fw-semibold text-secondary mb-2">Popular Banks</div>
+                        <div class="bank-grid mb-3">
+                            <button type="button" class="bank-tile" data-bank="SBI">
+                                <div class="bank-logo" style="background:#22408a;color:#fff">SBI</div>
+                                <span>State Bank</span>
+                            </button>
+                            <button type="button" class="bank-tile" data-bank="HDFC">
+                                <div class="bank-logo" style="background:#004c8f;color:#fff">HDFC</div>
+                                <span>HDFC Bank</span>
+                            </button>
+                            <button type="button" class="bank-tile" data-bank="ICICI">
+                                <div class="bank-logo" style="background:#b5271b;color:#fff">ICICI</div>
+                                <span>ICICI Bank</span>
+                            </button>
+                            <button type="button" class="bank-tile" data-bank="Axis">
+                                <div class="bank-logo" style="background:#800000;color:#fff">AXIS</div>
+                                <span>Axis Bank</span>
+                            </button>
+                            <button type="button" class="bank-tile" data-bank="Kotak">
+                                <div class="bank-logo" style="background:#e4121a;color:#fff">KMB</div>
+                                <span>Kotak</span>
+                            </button>
+                            <button type="button" class="bank-tile" data-bank="PNB">
+                                <div class="bank-logo" style="background:#dd7100;color:#fff">PNB</div>
+                                <span>Punjab NB</span>
+                            </button>
+                        </div>
+                        <div class="divider-or my-3">or search all banks</div>
+                        <label class="form-label small fw-semibold">All Banks</label>
+                        <select id="bankDropdown" class="form-select">
+                            <option value="">-- Select your bank --</option>
+                            <option value="SBI">State Bank of India (SBI)</option>
+                            <option value="HDFC">HDFC Bank</option>
+                            <option value="ICICI">ICICI Bank</option>
+                            <option value="Axis">Axis Bank</option>
+                            <option value="Kotak">Kotak Mahindra Bank</option>
+                            <option value="PNB">Punjab National Bank</option>
+                            <option value="BOB">Bank of Baroda</option>
+                            <option value="Canara">Canara Bank</option>
+                            <option value="IndusInd">IndusInd Bank</option>
+                            <option value="Yes">Yes Bank</option>
+                            <option value="IDFC">IDFC First Bank</option>
+                            <option value="Union">Union Bank of India</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a bank to continue.</div>
+                        <div id="netBankingInfo" class="alert alert-info d-flex gap-2 align-items-start small mt-3 mb-0 d-none">
+                            <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
+                            <span>You will be redirected to your bank's secure portal to complete authentication and payment.</span>
+                        </div>
+                    </div>
+
+                    @*-- Submit Row --*@
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-secondary small">Total Amount</span>
+                            <span class="fw-bold fs-5">@Model.Ammount.ToString("C0")</span>
+                        </div>
+                        <button type="submit" class="btn btn-brand w-100 py-3 fw-semibold" id="payBtn">
+                            <i class="bi bi-lock-fill me-2"></i>Pay @Model.Ammount.ToString("C0") Securely
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-brand w-100">Pay Now</button>
             </form>
         </div>
     </div>
 </section>
+
+@section Scripts {
+<script>
+(function () {
+    'use strict';
+
+    // ── Tab switching ─────────────────────────────────────────────────────────
+    const tabs    = document.querySelectorAll('.pm-tab');
+    const hidden  = document.getElementById('hiddenPaymentMethod');
+
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        hidden.value = tab.dataset.method;
+        document.querySelectorAll('.pm-section').forEach(s => s.classList.add('d-none'));
+        document.getElementById('section-' + tab.dataset.method).classList.remove('d-none');
+        clearValidation();
+    }));
+
+    // ── Card live preview ─────────────────────────────────────────────────────
+    const cardNumInput    = document.getElementById('cardNumber');
+    const cardHolderInput = document.getElementById('cardHolder');
+    const expMonthInput   = document.getElementById('expiryMonth');
+    const expYearInput    = document.getElementById('expiryYear');
+
+    cardNumInput?.addEventListener('input', e => {
+        let raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+        e.target.value = raw.replace(/(.{4})/g, '$1 ').trim();
+        document.getElementById('cardDisplay').textContent = e.target.value || '•••• •••• •••• ••••';
+    });
+
+    cardHolderInput?.addEventListener('input', e => {
+        document.getElementById('holderDisplay').textContent = e.target.value.toUpperCase() || 'YOUR NAME';
+    });
+
+    const syncExpiry = () => {
+        const m = expMonthInput?.value || 'MM';
+        const y = expYearInput?.value ? String(expYearInput.value).slice(-2) : 'YY';
+        document.getElementById('expiryDisplay').textContent = `${m} / ${y}`;
+    };
+    expMonthInput?.addEventListener('change', syncExpiry);
+    expYearInput?.addEventListener('change', syncExpiry);
+
+    // ── Bank tile selection ───────────────────────────────────────────────────
+    const bankTiles    = document.querySelectorAll('.bank-tile');
+    const bankDropdown = document.getElementById('bankDropdown');
+    const nbInfo       = document.getElementById('netBankingInfo');
+
+    const selectBank = val => {
+        bankTiles.forEach(t => t.classList.toggle('selected', t.dataset.bank === val));
+        if (bankDropdown) bankDropdown.value = val;
+        if (nbInfo) val ? nbInfo.classList.remove('d-none') : nbInfo.classList.add('d-none');
+    };
+
+    bankTiles.forEach(t => t.addEventListener('click', () => selectBank(t.dataset.bank)));
+    bankDropdown?.addEventListener('change', () => selectBank(bankDropdown.value));
+
+    // ── Validation ────────────────────────────────────────────────────────────
+    document.getElementById('paymentForm')?.addEventListener('submit', e => {
+        const method = hidden.value;
+        let ok = true;
+
+        if (method === 'UPI') {
+            const upi = document.getElementById('upiId');
+            /^[\w.\-+]{2,}@@[a-zA-Z]{2,}$/.test(upi.value.trim()) ? setValid(upi) : (setInvalid(upi), ok = false);
+        }
+
+        if (method === 'Credit Card') {
+            const num    = document.getElementById('cardNumber');
+            const holder = document.getElementById('cardHolder');
+            const mon    = document.getElementById('expiryMonth');
+            const yr     = document.getElementById('expiryYear');
+            const cvv    = document.getElementById('cvv');
+
+            const digits = num.value.replace(/\s/g, '');
+            digits.length === 16 ? setValid(num)    : (setInvalid(num),    ok = false);
+            holder.value.trim()  ? setValid(holder) : (setInvalid(holder), ok = false);
+            mon.value            ? setValid(mon)    : (setInvalid(mon),    ok = false);
+            yr.value             ? setValid(yr)     : (setInvalid(yr),     ok = false);
+            /^\d{3,4}$/.test(cvv.value.trim()) ? setValid(cvv) : (setInvalid(cvv), ok = false);
+            // show cvv error via sibling (input inside input-group needs special handling)
+            const cvvErr = document.getElementById('cvvError');
+            if (cvvErr) cvvErr.style.visibility = ok ? 'hidden' : 'visible';
+        }
+
+        if (method === 'Net Banking') {
+            const bank = document.getElementById('bankDropdown');
+            bank.value ? setValid(bank) : (setInvalid(bank), ok = false);
+        }
+
+        if (!ok) e.preventDefault();
+    });
+
+    function setInvalid(el) { el.classList.add('is-invalid'); el.classList.remove('is-valid'); }
+    function setValid(el)   { el.classList.remove('is-invalid'); el.classList.add('is-valid'); }
+    function clearValidation() {
+        document.querySelectorAll('.is-invalid, .is-valid').forEach(el => el.classList.remove('is-invalid', 'is-valid'));
+        const cvvErr = document.getElementById('cvvError');
+        if (cvvErr) cvvErr.style.visibility = 'hidden';
+    }
+})();
+</script>
+}

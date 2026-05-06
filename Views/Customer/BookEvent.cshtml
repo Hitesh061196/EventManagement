@@ -29,7 +29,7 @@
         </div>
         <div class="col-md-4">
             <label asp-for="Date" class="form-label">Event Date</label>
-            <input asp-for="Date" class="form-control" />
+            <input asp-for="Date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="col-md-4">
@@ -54,8 +54,9 @@
         </div>
         <div class="col-md-4">
             <label asp-for="ToTime" class="form-label">To Time</label>
-            <input asp-for="ToTime" type="time" class="form-control" />
+            <input asp-for="ToTime" type="time" class="form-control" id="to-time-input" />
             <span asp-validation-for="ToTime" class="text-danger"></span>
+            <span id="to-time-error" class="text-danger small" style="display:none">To Time must be later than From Time.</span>
         </div>
         <div class="col-12">
             <label asp-for="Comment" class="form-label">Booking Comment</label>
@@ -97,6 +98,26 @@
             const summaryNode = document.getElementById("selected-services-summary");
             const totalNode = document.getElementById("booking-total-amount");
             const requiredFields = ["PartyPlotId", "CatererId", "TransporterId"];
+
+            // ── Time range validation ─────────────────────────────────────────
+            const fromTimeInput = form.querySelector('input[name="FromTime"]');
+            const toTimeInput   = document.getElementById("to-time-input");
+            const toTimeError   = document.getElementById("to-time-error");
+
+            const validateTimeRange = () => {
+                if (!fromTimeInput?.value || !toTimeInput?.value) {
+                    toTimeError.style.display = "none";
+                    toTimeInput?.classList.remove("is-invalid");
+                    return true;
+                }
+                const invalid = toTimeInput.value <= fromTimeInput.value;
+                toTimeError.style.display = invalid ? "" : "none";
+                toTimeInput.classList.toggle("is-invalid", invalid);
+                return !invalid;
+            };
+
+            fromTimeInput?.addEventListener("change", validateTimeRange);
+            toTimeInput?.addEventListener("change", validateTimeRange);
             const currency = new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -168,20 +189,21 @@
             form.addEventListener("submit", (event) => {
                 updateSummary();
 
+                const timeRangeOk = validateTimeRange();
+
                 const missingRequired = requiredFields.filter((fieldName) => {
                     const checkedInput = getCheckedInput(fieldName);
                     return !checkedInput || !checkedInput.value;
                 });
 
-                if (missingRequired.length > 0) {
+                if (missingRequired.length > 0 || !timeRangeOk) {
                     event.preventDefault();
 
                     if (window.Swal) {
-                        Swal.fire({
-                            icon: "warning",
-                            title: "Complete Required Steps",
-                            text: `Please select ${missingRequired.map(getCategoryLabel).join(", ")} before checkout.`
-                        });
+                        const text = missingRequired.length > 0
+                            ? `Please select ${missingRequired.map(getCategoryLabel).join(", ")} before checkout.`
+                            : "To Time must be later than From Time.";
+                        Swal.fire({ icon: "warning", title: "Complete Required Steps", text });
                     }
                 }
             });

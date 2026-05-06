@@ -33,20 +33,47 @@
                                     <div class="small text-secondary">@item.Booking.Event_Time &nbsp;|&nbsp; @item.Booking.From_Time – @item.Booking.To_Time</div>
                                 }
                             </div>
-                            <div class="text-lg-end">
-                                <div class="price-pill mb-2">@item.Booking.Ammount.ToString("C0")</div>
-                                <div class="status-pill @(item.Booking.Event_Manager_Approved ? "success" : "warning")">@item.Booking.Booking_Status</div>
+                            <div class="text-lg-end d-flex flex-column align-items-lg-end gap-2">
+                                <div class="price-pill">@item.Booking.Ammount.ToString("C0")</div>
+                                <div class="status-pill @(item.Booking.Event_Manager_Approved ? "success" : "warning")">
+                                    @item.Booking.Booking_Status
+                                </div>
+                                @{
+                                    var timingStatus = item.EventTimingStatus;
+                                    if (timingStatus != null)
+                                    {
+                                        var (pillCss, icon) = timingStatus switch
+                                        {
+                                            AppConstants.EventTimingStatus.Completed  => ("success", "bi-check-circle-fill"),
+                                            AppConstants.EventTimingStatus.InProgress => ("info",    "bi-play-circle-fill"),
+                                            _                                         => ("warning",  "bi-clock-fill")
+                                        };
+                                        <div class="status-pill @pillCss">
+                                            <i class="bi @icon me-1"></i>@timingStatus
+                                        </div>
+                                    }
+                                }
                             </div>
                         </div>
 
                         <div class="row g-3 mb-4">
+                            @{
+                                // Once the booking is paid, all services are treated as confirmed regardless of the stored value
+                                var bookingPaid = item.Booking.Booking_Status == AppConstants.BookingStatus.Paid
+                                               || item.Booking.Payment_Status  == AppConstants.PaymentStatus.Paid;
+                            }
                             @foreach (var service in item.Services)
                             {
+                                var effectiveStatus = (bookingPaid || service.Confirmation_Status == AppConstants.ConfirmationStatus.Confirmed)
+                                    ? AppConstants.ConfirmationStatus.Confirmed
+                                    : service.Confirmation_Status;
+                                var pillCss = effectiveStatus == AppConstants.ConfirmationStatus.Confirmed ? "success" : "warning";
+
                                 <div class="col-md-6 col-xl-4">
                                     <div class="metric-card p-3 h-100">
                                         <div class="d-flex justify-content-between mb-2">
                                             <span class="fw-semibold">@service.Service_Category</span>
-                                            <span class="status-pill @(service.Confirmation_Status == "Confirmed" ? "success" : "warning")">@service.Confirmation_Status</span>
+                                            <span class="status-pill @pillCss">@effectiveStatus</span>
                                         </div>
                                         <div class="small text-secondary">@(service.ServiceCatalogItem?.Service_Name ?? "Service")</div>
                                         <div class="small text-secondary">@service.Price.ToString("C0")</div>

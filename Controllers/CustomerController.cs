@@ -182,6 +182,7 @@ namespace EventManagement.Controllers
         {
             var customerProfileId = await GetCustomerProfileIdAsync();
             var booking = await _context.BookingCartDetails
+                .Include(b => b.Services)
                 .FirstOrDefaultAsync(b => b.Booking_Id == id && b.Custom_Id_fk == customerProfileId);
 
             if (booking == null)
@@ -192,6 +193,14 @@ namespace EventManagement.Controllers
             booking.Payment_Status = AppConstants.PaymentStatus.Paid;
             booking.Booking_Status = AppConstants.BookingStatus.Paid;
 
+            // Confirm any service lines still pending — event manager already approved the booking
+            var paidOn = DateTime.UtcNow;
+            foreach (var service in booking.Services.Where(s => s.Confirmation_Status != AppConstants.ConfirmationStatus.Confirmed))
+            {
+                service.Confirmation_Status = AppConstants.ConfirmationStatus.Confirmed;
+                service.Confirmed_On        = paidOn;
+            }
+
             _context.PaymentDetails.Add(new PaymentDetail
             {
                 Booking_Id_fk         = booking.Booking_Id,
@@ -199,7 +208,7 @@ namespace EventManagement.Controllers
                 Payment_Method        = paymentMethod,
                 Payment_Status        = AppConstants.PaymentStatus.Paid,
                 Transaction_Reference = $"PAY-{Guid.NewGuid():N}"[..12].ToUpperInvariant(),
-                Paid_On               = DateTime.UtcNow
+                Paid_On               = paidOn
             });
 
             await _context.SaveChangesAsync();
