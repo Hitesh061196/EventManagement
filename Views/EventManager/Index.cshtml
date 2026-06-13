@@ -23,7 +23,12 @@
                         </div>
                         <div class="text-lg-end">
                             <div class="price-pill mb-2">@booking.Ammount.ToString("C0")</div>
-                            <div class="status-pill @(booking.Event_Manager_Approved ? "success" : "warning")">@booking.Booking_Status</div>
+                            @{
+                                var statusPillCss = booking.Event_Manager_Approved ? "success"
+                                    : booking.Booking_Status == AppConstants.BookingStatus.RejectedByManager ? "danger"
+                                    : "warning";
+                            }
+                            <div class="status-pill @statusPillCss">@booking.Booking_Status</div>
                         </div>
                     </div>
 
@@ -56,13 +61,57 @@
                         }
                     </div>
 
-                    @if (!booking.Event_Manager_Approved && Context.Session.GetString("Role") == "Event Manager")
+                    @if (booking.Booking_Status == AppConstants.BookingStatus.RejectedByManager)
                     {
-                        <form asp-action="ConfirmOrder" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@booking.Booking_Id" />
-                            <button class="btn btn-brand">Event Manager Confirm Order</button>
-                        </form>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <span class="status-pill danger"><i class="bi bi-x-circle-fill me-1"></i>Rejected by Event Manager</span>
+                            @if (!string.IsNullOrEmpty(booking.Rejection_Reason))
+                            {
+                                <span class="small text-secondary">Reason: @booking.Rejection_Reason</span>
+                            }
+                        </div>
+                    }
+                    else if (!booking.Event_Manager_Approved && Context.Session.GetString("Role") == AppConstants.Roles.EventManager)
+                    {
+                        <div class="d-flex gap-2 flex-wrap">
+                            <form asp-action="ConfirmOrder" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@booking.Booking_Id" />
+                                <button class="btn btn-brand">Confirm Order</button>
+                            </form>
+                            <button type="button" class="btn btn-outline-danger"
+                                    data-bs-toggle="modal" data-bs-target="#rejectModal-@booking.Booking_Id">
+                                Reject Order
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="rejectModal-@booking.Booking_Id" tabindex="-1"
+                             aria-labelledby="rejectModalLabel-@booking.Booking_Id" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form asp-action="RejectOrder" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@booking.Booking_Id" />
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="rejectModalLabel-@booking.Booking_Id">Reject Order</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="text-secondary mb-3">You are about to reject booking <strong>@booking.Booking_Reference</strong>. Please provide a reason.</p>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Rejection Reason <span class="text-danger">*</span></label>
+                                                <textarea name="reason" class="form-control" rows="3" maxlength="200" required
+                                                          placeholder="Enter the reason for rejection..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
